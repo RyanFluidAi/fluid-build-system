@@ -65,6 +65,7 @@ ABS is built from five pillars:
 /new-sprint -> create agent-executable work plan
 /review-sprint-doc -> validate before implementation
 /start-sprint -> execute the work plan
+/check-sprint -> deep code review of sprint changes
 /review-sprint -> verification + documentation + close-out
 ```
 
@@ -198,7 +199,7 @@ Skills are the primary extension mechanism. Each skill is a directory under `.cl
 | `agent` | Which subagent type when `context: fork` |
 | `allowed-tools` | Auto-approve specific tools when this skill is active |
 
-**Included skills** (19 total):
+**Included skills** (22 total):
 
 Governance pipeline:
 - `new-idea` — explore architecture, create idea artifact
@@ -208,6 +209,7 @@ Governance pipeline:
 - `new-sprint` — create agent-executable sprint doc
 - `review-sprint-doc` — validate sprint doc before implementation
 - `start-sprint` — execute work plan (implementation only)
+- `check-sprint` — deep code review of sprint changes before verification
 - `review-sprint` — verification gates + close-out
 
 Session management:
@@ -227,9 +229,11 @@ Code quality:
 - `review-code` — code review for quality, correctness, and conventions
 
 Utility:
+- `sync` — sync local repo with remote (fetch, pull, prune)
 - `deploy-app` — deployment workflow
 - `compound` — document solved problems
 - `skill-creator` — meta-skill for creating new skills
+- `create-sub-agent` — interactive wizard for creating custom subagents
 - `verify-install` — verify ABS installation
 
 ### 6.4 Agents (subagents)
@@ -341,6 +345,7 @@ planning -> in_progress -> verification -> done
 ```
 
 - `/start-sprint` handles planning -> in_progress
+- `/check-sprint` performs deep code review after implementation, before verification
 - `/review-sprint` handles verification -> done (the only way to reach done)
 
 ---

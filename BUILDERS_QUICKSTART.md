@@ -28,14 +28,16 @@ ABS (Agent Build System) makes it possible to build confidently with AI agents b
 - `docs/sprints/CURRENT_STATUS.md` — what's happening now
 - `docs/sprints/SPRINTS/<active sprint>.md` — the plan you're executing
 
-## The 8 skills you'll use most (type `/` in Claude Code)
+## The 10 skills you'll use most (type `/` in Claude Code)
 
 - `/verify-install` — confirms ABS is installed correctly
 - `/start-session` — reviews project status at the start of a session
+- `/sync` — syncs local repo with remote (fetch, pull, prune)
 - `/new-idea` — explores a new feature or concept
 - `/new-plan` — creates a plan (approval gate for contract changes)
 - `/new-sprint` — creates a sprint plan
 - `/start-sprint` — begins executing the sprint
+- `/check-sprint` — deep code review after implementation, before closing
 - `/mini-audit` — creates a quick check document after non-trivial work
 - `/close-session` — end-of-session checklist to keep the repo "resume fast"
 
@@ -50,7 +52,8 @@ idea -> plan (if contract changes) -> sprint -> implementation -> review -> done
 3. Get approval
 4. Create sprint with `/new-sprint`
 5. Execute with `/start-sprint`
-6. Close out with `/review-sprint`
+6. Code review with `/check-sprint`
+7. Close out with `/review-sprint`
 
 ## Install Documentation (one-time)
 
