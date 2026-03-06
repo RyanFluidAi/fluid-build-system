@@ -1,9 +1,10 @@
 ---
-Status: Draft
-Created: YYYY-MM-DD
-Author: ""
-Approver: ""
-Related Issues: None
+doc_type: plan
+status: draft
+created: YYYY-MM-DD
+author: ""
+approver: ""
+related_issues: []
 ---
 
 # Plan: <Title>

@@ -3,6 +3,7 @@ name: mini-audit
 description: Create or update a mini audit for targeted drift checks after non-trivial changes. Use after changes that touch canonical surfaces (schema, API, DB, integrations).
 argument-hint: "[scope] [canonical docs to verify]"
 context: fork
+allowed-tools: Read, Glob, Grep, Bash
 ---
 
 # /mini-audit — Targeted Drift Check
@@ -33,6 +34,7 @@ If no scope is provided, ask the user what was changed and which canonical docs 
 
 ### 3) Create/update the audit doc
 
+- **Template**: see `docs/audits/templates/mini-audit-template.md` for the canonical structure.
 - **Filename**: `docs/audits/active/YYYY-MM-DD-<scope>-mini.md`
 - **Frontmatter**: doc_type (audit), audit_type (mini), status (active), created, scope, open_p0, open_p1
 - **Contents**:

@@ -3,6 +3,7 @@ name: in-depth-audit
 description: Create or update an in-depth audit for comprehensive subsystem verification. Use monthly, at major milestones, or when drift is suspected.
 argument-hint: "[scope] [target date range or sprint context]"
 context: fork
+allowed-tools: Read, Glob, Grep, Bash
 ---
 
 # /in-depth-audit — Comprehensive Subsystem Audit
@@ -31,6 +32,7 @@ If no scope is provided, ask the user what subsystem to audit and the date range
 
 ### 3) Create/update the audit doc
 
+- **Template**: see `docs/audits/templates/in-depth-audit-template.md` for the canonical structure.
 - **Filename**: `docs/audits/active/YYYY-MM-DD-<scope>-in-depth.md`
 - **Frontmatter**: doc_type (audit), audit_type (in_depth), status (active), created, scope, open_p0, open_p1
 - **Contents**:

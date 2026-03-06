@@ -1,7 +1,7 @@
 ---
 name: review-sprint-doc
 description: Review a sprint doc for completeness, consistency, and implementation readiness. This is NOT /review-sprint (which runs verification gates and closes a sprint). Read-only — reports findings in chat only.
-argument-hint: "[path to sprint doc under docs/sprints/SPRINTS/]"
+argument-hint: "[path to sprint doc under docs/sprints/]"
 allowed-tools: Read, Glob, Grep
 context: fork
 ---
@@ -22,7 +22,7 @@ $ARGUMENTS
 
 If no path is provided:
 - Read `docs/sprints/CURRENT_STATUS.md` and use `active_sprint` as the default.
-- If no active sprint is found, ask the user which sprint doc to review or list files under `docs/sprints/SPRINTS/`.
+- If no active sprint is found, ask the user which sprint doc to review or list files under `docs/sprints/`.
 
 ## Steps
 

@@ -11,7 +11,7 @@ This folder is a **portable starter kit** for setting up the **ABS (Agent Build 
 
 - **Progressive disclosure** (skills, not giant rules)
 - **One-source-of-truth status** (fast resume)
-- **Governance pipeline** (idea -> plan -> approval -> sprint -> review)
+- **Governance pipeline** (idea -> plan -> check -> approval -> sprint -> check -> review)
 - **Spec-driven execution** (sprints with stage tracking)
 - **Drift control** (mini + in-depth audits)
 - **Session management** (start/close session, knowledge compounding)

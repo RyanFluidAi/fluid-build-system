@@ -26,34 +26,38 @@ ABS (Agent Build System) makes it possible to build confidently with AI agents b
 
 - `PROJECT_STATUS.md` — the fastest resume snapshot
 - `docs/sprints/CURRENT_STATUS.md` — what's happening now
-- `docs/sprints/SPRINTS/<active sprint>.md` — the plan you're executing
+- `docs/sprints/<active sprint>.md` — the plan you're executing
 
-## The 10 skills you'll use most (type `/` in Claude Code)
+## The skills you'll use most (type `/` in Claude Code)
 
 - `/verify-install` — confirms ABS is installed correctly
 - `/start-session` — reviews project status at the start of a session
-- `/sync` — syncs local repo with remote (fetch, pull, prune)
+- `/pre-flight-git` — prepares repo for new work (clean state, sync, prune)
 - `/new-idea` — explores a new feature or concept
 - `/new-plan` — creates a plan (approval gate for contract changes)
-- `/new-sprint` — creates a sprint plan
-- `/start-sprint` — begins executing the sprint
-- `/check-sprint` — deep code review after implementation, before closing
+- `/check-plan` — deep review of plan feasibility against the codebase
+- `/new-sprint` — creates a sprint plan (with parallel sub-agent task tags)
+- `/start-sprint` — begins executing the sprint (parallel sub-agents by domain)
+- `/check-sprint` — deep code review after implementation, before verification
+- `/review-sprint` — verification gates + close-out (`--deep` for parallel reviewers)
 - `/mini-audit` — creates a quick check document after non-trivial work
+- `/post-merge-git` — cleans up after a PR merge
 - `/close-session` — end-of-session checklist to keep the repo "resume fast"
 
 ## The governance pipeline (how features progress)
 
 ```
-idea -> plan (if contract changes) -> sprint -> implementation -> review -> done
+idea -> plan -> check plan -> approval -> sprint -> implementation -> check sprint -> review -> done
 ```
 
 1. Explore with `/new-idea`
 2. Formalize with `/new-plan` (if schema/API/DB changes needed)
-3. Get approval
-4. Create sprint with `/new-sprint`
-5. Execute with `/start-sprint`
-6. Code review with `/check-sprint`
-7. Close out with `/review-sprint`
+3. Review feasibility with `/check-plan`
+4. Get approval
+5. Create sprint with `/new-sprint`
+6. Execute with `/start-sprint`
+7. Code review with `/check-sprint`
+8. Close out with `/review-sprint`
 
 ## Install Documentation (one-time)
 

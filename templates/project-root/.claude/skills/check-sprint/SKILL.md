@@ -1,7 +1,7 @@
 ---
 name: check-sprint
 description: Deep code review of a completed sprint. Reads every diff, cross-references against the sprint doc and plan, hunts for bugs and missed requirements. Run this after implementation is done but before /review-sprint.
-argument-hint: "[optional: sprint doc path under docs/sprints/SPRINTS]"
+argument-hint: "[optional: sprint doc path under docs/sprints/]"
 ---
 
 # /check-sprint — Sprint Code Review
@@ -10,7 +10,7 @@ argument-hint: "[optional: sprint doc path under docs/sprints/SPRINTS]"
 
 Perform a deep, hands-on code review of everything implemented in a sprint. Cross-reference the actual code against the sprint doc and associated plan. Find bugs, missed requirements, convention violations, and regression risks. Produce a prioritized fix list so issues can be resolved before running `/review-sprint`.
 
-**This is NOT `/review-sprint`** (which runs automated verification gates and closes the sprint). This command reads the code like a senior engineer doing a PR review.
+**This is NOT `/review-sprint`** (which runs automated verification gates and closes the sprint). This skill reads the code like a senior engineer doing a PR review.
 
 ## Inputs
 

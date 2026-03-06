@@ -22,6 +22,7 @@ Verify these files exist and are non-empty:
 - [ ] `docs/sprints/CURRENT_STATUS.md` (current work status)
 
 **Rules:**
+- [ ] `.claude/rules/foundation.md`
 - [ ] `.claude/rules/workflow-small-fixes.md`
 - [ ] `.claude/rules/workflow-sprints.md`
 - [ ] `.claude/rules/workflow-audits.md`
@@ -42,7 +43,7 @@ Verify these files exist and are non-empty:
 **Documentation:**
 - [ ] `docs/plans/` directory exists with plan template
 - [ ] `docs/ideas/` directory exists with idea template
-- [ ] `docs/sprints/SPRINTS/` directory exists with sprint template
+- [ ] `docs/sprints/sprint-template.md` exists
 - [ ] `docs/audits/active/` and `docs/audits/resolved/` directories exist
 - [ ] `docs/sessions/` directory exists
 - [ ] `docs/reference/` directory exists with canonical docs (or `/install-documentation` not yet run)

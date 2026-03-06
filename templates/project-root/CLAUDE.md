@@ -12,14 +12,15 @@ This repository uses the **Agent Build System (ABS)** — a governance framework
 1. `PROJECT_STATUS.md` — fastest snapshot of current state
 2. `docs/sprints/CURRENT_STATUS.md` — what's happening now
 3. `.claude/skills/` — load only the relevant skills (2-4 max)
-4. `.claude/agents/` — specialized subagents (verifier, test-runner, debugger)
+4. `.claude/agents/` — specialized subagents (verifier, test-runner, debugger, + 6 reviewers for --deep mode)
 5. `docs/audits/active/` — unresolved P0/P1 drift findings
 
 ## Governance (non-negotiable)
 
 - If a change impacts canonical contracts (schemas/API/DB/business rules), create a **plan** in `docs/plans/` and wait for explicit approval before implementing.
-- Contract changes follow the pipeline: `/new-idea` -> `/new-plan` -> approval -> `/new-sprint` -> `/start-sprint` -> `/review-sprint`
+- Contract changes follow the pipeline: `/new-idea` -> `/new-plan` -> `/check-plan` -> approval -> `/new-sprint` -> `/start-sprint` -> `/check-sprint` -> `/review-sprint`
 - Review gates exist at each stage: `/review-idea-doc`, `/review-plan-doc`, `/review-sprint-doc`
+- `/review-sprint` supports `--deep` for parallel reviewer subagents (architecture, security, performance, data integrity, test quality, docs governance)
 
 ## Workflows
 

@@ -1,6 +1,4 @@
----
-paths: ["**"]
----
+<!-- Applies to all small fix/refactor/tweak tasks that don't require a sprint plan. -->
 
 # Workflow: Small Fixes
 

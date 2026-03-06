@@ -16,6 +16,7 @@ Use this checklist when installing into a **new** or **existing** repo.
 - [ ] Review: [Subagents](https://code.claude.com/docs/en/sub-agents)
 - [ ] Review: [Hooks](https://code.claude.com/docs/en/hooks)
 - [ ] Review: [Settings](https://code.claude.com/docs/en/settings)
+- [ ] Review: [MCP Servers](https://code.claude.com/docs/en/mcp)
 
 ## 1) Copy the starter tree
 
@@ -62,7 +63,7 @@ Use this checklist when installing into a **new** or **existing** repo.
 ## 7) Bootstrap execution tracking (sprints)
 
 - [ ] `docs/sprints/README.md`
-- [ ] `docs/sprints/SPRINTS/sprint-template.md`
+- [ ] `docs/sprints/sprint-template.md`
 
 ## 8) Bootstrap drift control (audits + fast checks)
 

@@ -50,7 +50,7 @@ Write a brief summary for the user including:
 
 - This skill helps you "resume fast" by providing immediate context
 - For deeper context, the user can also check:
-  - `docs/sprints/SPRINTS/` (sprint details)
+  - `docs/sprints/` (sprint details)
   - `docs/sessions/` (session-by-session history)
   - `docs/audits/active/` (unresolved issues)
   - `.claude/skills/` (skill-specific context)

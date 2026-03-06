@@ -8,7 +8,7 @@ stage: ""
 
 ## Active Sprint
 
-<!-- Link to sprint doc: docs/sprints/SPRINTS/<sprint>.md -->
+<!-- Link to sprint doc: docs/sprints/<sprint>.md -->
 
 ## Stage
 

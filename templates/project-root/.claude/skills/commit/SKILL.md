@@ -1,6 +1,7 @@
 ---
 name: commit
 description: Create a well-structured git commit with conventional message format. Use after completing a task or set of related changes.
+argument-hint: "[optional: commit message or scope hint]"
 ---
 
 # /commit — Structured Git Commit

@@ -60,13 +60,14 @@ ABS is built from five pillars:
 /new-idea -> explore architecture and design
 /review-idea-doc -> validate completeness
 /new-plan -> formalize contract changes (requires approval)
-/review-plan-doc -> validate before approval
+/check-plan -> deep review of plan feasibility against codebase
+/review-plan-doc -> validate format before approval
   pause: wait for explicit approval
-/new-sprint -> create agent-executable work plan
+/new-sprint -> create agent-executable work plan (with parallel sub-agent task tags)
 /review-sprint-doc -> validate before implementation
-/start-sprint -> execute the work plan
+/start-sprint -> execute the work plan (parallel sub-agents by domain)
 /check-sprint -> deep code review of sprint changes
-/review-sprint -> verification + documentation + close-out
+/review-sprint -> verification + documentation + close-out (--deep for parallel reviewers)
 ```
 
 **Small fixes** skip the pipeline — follow `.claude/rules/workflow-small-fixes.md`.
@@ -173,12 +174,13 @@ Subdirectory `CLAUDE.md` files are loaded dynamically when Claude works in that 
 
 Rules live in `.claude/rules/` as plain Markdown files. Unlike Cursor rules, Claude Code rules don't use `alwaysApply` or `globs` frontmatter — they are discovered as project context.
 
-This kit includes three workflow rules:
+This kit includes four rules:
+- `foundation.md` — always-on context loading, progressive disclosure, non-negotiable governance
 - `workflow-small-fixes.md` — low-ceremony guardrails for small changes
 - `workflow-sprints.md` — spec-driven execution with stage tracking
 - `workflow-audits.md` — drift detection and remediation workflow
 
-Foundation governance rules go in the root `CLAUDE.md` (always loaded).
+Foundation rules are always in context (no `paths` restriction). Workflow rules are scoped to their respective doc paths.
 
 ### 6.3 Skills
 
@@ -199,22 +201,23 @@ Skills are the primary extension mechanism. Each skill is a directory under `.cl
 | `agent` | Which subagent type when `context: fork` |
 | `allowed-tools` | Auto-approve specific tools when this skill is active |
 
-**Included skills** (22 total):
+**Included skills** (26 total):
 
 Governance pipeline:
 - `new-idea` — explore architecture, create idea artifact
 - `review-idea-doc` — validate idea before it becomes a plan
-- `new-plan` — formal contract-change plan
-- `review-plan-doc` — validate plan before approval
-- `new-sprint` — create agent-executable sprint doc
+- `new-plan` — formal contract-change plan (with best practices and traceability)
+- `check-plan` — deep feasibility review of plan against codebase reality
+- `review-plan-doc` — validate plan format before approval
+- `new-sprint` — create agent-executable sprint doc (with parallel sub-agent task tags)
 - `review-sprint-doc` — validate sprint doc before implementation
-- `start-sprint` — execute work plan (implementation only)
+- `start-sprint` — execute work plan (supports parallel sub-agents by domain)
 - `check-sprint` — deep code review of sprint changes before verification
-- `review-sprint` — verification gates + close-out
+- `review-sprint` — verification gates + close-out (`--deep` for parallel reviewer subagents)
 
 Session management:
 - `start-session` — review project status at session start
-- `close-session` — end-of-session resume-fast checklist
+- `close-session` — end-of-session resume-fast checklist (with service shutdown)
 
 Audits:
 - `mini-audit` — targeted drift check
@@ -228,8 +231,12 @@ Code quality:
 - `commit` — structured git commit with conventional message format
 - `review-code` — code review for quality, correctness, and conventions
 
-Utility:
+Git workflows:
 - `sync` — sync local repo with remote (fetch, pull, prune)
+- `pre-flight-git` — prepare repo for new work (clean state, sync, prune branches)
+- `post-merge-git` — clean up after PR merge (switch to main, delete branch, prune)
+
+Utility:
 - `deploy-app` — deployment workflow
 - `compound` — document solved problems
 - `skill-creator` — meta-skill for creating new skills
@@ -255,7 +262,20 @@ Agents are specialized Claude instances with their own system prompts, tool rest
 | `isolation` | `worktree` for git worktree isolation |
 | `background` | `true` to always run as background task |
 
-**Included agents**: `verifier`, `test-runner`, `debugger`
+**Included agents** (9 total):
+
+Execution agents:
+- `verifier` — validates completed work (read-only)
+- `test-runner` — runs tests and fixes failures
+- `debugger` — root cause analysis and minimal fixes
+
+Reviewer agents (used by `/review-sprint --deep`):
+- `architecture-reviewer` — module boundaries, dependency direction, pattern consistency
+- `security-reviewer` — auth gaps, injection vectors, data exposure
+- `performance-reviewer` — N+1 queries, missing indexes, unnecessary re-renders
+- `data-integrity-reviewer` — missing transactions, constraint gaps, enum mismatches
+- `test-quality-reviewer` — coverage gaps, weak assertions, test isolation
+- `docs-governance-reviewer` — undocumented contract changes, stale canonical docs
 
 ### 6.5 Hooks
 
@@ -417,7 +437,7 @@ Use `/skill-creator` (or the skill-creator reference docs) when creating new ski
 
 ### Phase D — Execution tracking
 
-- Add `docs/sprints/SPRINTS/` with sprint template
+- Add `docs/sprints/` with sprint template and `CURRENT_STATUS.md`
 - Start tracking work using sprint docs with stage progression
 
 ### Phase E — Drift control
