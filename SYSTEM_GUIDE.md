@@ -54,21 +54,33 @@ ABS is built from five pillars:
 
 ### 2.2 The execution loop (how features get built)
 
-**Governance pipeline**:
+**Governance pipeline** (11 steps):
 
 ```
-/new-idea -> explore architecture and design
-/review-idea-doc -> validate completeness
-/new-plan -> formalize contract changes (requires approval)
-/check-plan -> deep review of plan feasibility against codebase
-/review-plan-doc -> validate format before approval
-  pause: wait for explicit approval
-/new-sprint -> create agent-executable work plan (with parallel sub-agent task tags)
-/review-sprint-doc -> validate before implementation
-/start-sprint -> execute the work plan (parallel sub-agents by domain)
-/check-sprint -> deep code review of sprint changes
-/review-sprint -> verification + documentation + close-out (--deep for parallel reviewers)
+ Step  Skill                Purpose
+ ───── ──────────────────── ──────────────────────────────────────────
+  1    /new-idea             explore architecture and design
+  2    /review-idea-doc      validate idea completeness
+  3    /new-plan             formalize contract changes
+  4    /review-plan-doc      validate plan format and completeness
+  5    /check-plan           deep feasibility review against codebase
+  6    ⏸ approval            wait for explicit user approval
+  7    /new-sprint           create agent-executable work plan
+  8    /review-sprint-doc    validate sprint doc before building
+  9    /start-sprint         execute the work plan (parallel sub-agents)
+ 10    /check-sprint         deep code review after implementation
+ 11    /review-sprint        verification + close-out → stage: done
 ```
+
+Every **create** step has a corresponding **review/check** step:
+
+| Create | Format review | Deep review |
+|--------|--------------|-------------|
+| `/new-idea` | `/review-idea-doc` | — |
+| `/new-plan` | `/review-plan-doc` | `/check-plan` |
+| `/new-sprint` | `/review-sprint-doc` | — |
+| `/start-sprint` (build) | — | `/check-sprint` |
+| — | — | `/review-sprint` (final gate) |
 
 **Small fixes** skip the pipeline — follow `.claude/rules/workflow-small-fixes.md`.
 
@@ -337,14 +349,18 @@ Not required for:
 
 ### 7.2 Plan workflow
 
-1. Explore via `/new-idea` (optional)
-2. Review idea via `/review-idea-doc` (optional)
+1. Explore via `/new-idea`
+2. Validate idea via `/review-idea-doc`
 3. Create plan via `/new-plan`
-4. Review plan via `/review-plan-doc`
-5. Wait for explicit approval
-6. Create sprint via `/new-sprint`
-7. Implement and update canonical docs
-8. Mark plan as "Implemented"
+4. Validate plan format via `/review-plan-doc`
+5. Check feasibility via `/check-plan`
+6. Wait for explicit user approval
+7. Create sprint via `/new-sprint`
+8. Validate sprint doc via `/review-sprint-doc`
+9. Implement via `/start-sprint` and update canonical docs
+10. Code review via `/check-sprint`
+11. Verify and close via `/review-sprint`
+12. Mark plan as "Implemented"
 
 ---
 

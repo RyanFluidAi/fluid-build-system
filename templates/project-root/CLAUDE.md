@@ -18,8 +18,22 @@ This repository uses the **Agent Build System (ABS)** — a governance framework
 ## Governance (non-negotiable)
 
 - If a change impacts canonical contracts (schemas/API/DB/business rules), create a **plan** in `docs/plans/` and wait for explicit approval before implementing.
-- Contract changes follow the pipeline: `/new-idea` -> `/new-plan` -> `/check-plan` -> approval -> `/new-sprint` -> `/start-sprint` -> `/check-sprint` -> `/review-sprint`
-- Review gates exist at each stage: `/review-idea-doc`, `/review-plan-doc`, `/review-sprint-doc`
+- Contract changes follow the full pipeline:
+
+```
+/new-idea          → explore architecture and design
+/review-idea-doc   → validate idea completeness
+/new-plan          → formalize contract changes
+/review-plan-doc   → validate plan format and completeness
+/check-plan        → deep feasibility review against codebase
+  ⏸ wait for explicit user approval
+/new-sprint        → create agent-executable work plan
+/review-sprint-doc → validate sprint doc before building
+/start-sprint      → execute the work plan
+/check-sprint      → deep code review after implementation
+/review-sprint     → verification gates + close-out → stage: done
+```
+
 - `/review-sprint` supports `--deep` for parallel reviewer subagents (architecture, security, performance, data integrity, test quality, docs governance)
 
 ## Workflows

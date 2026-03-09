@@ -34,9 +34,12 @@ ABS (Agent Build System) makes it possible to build confidently with AI agents b
 - `/start-session` — reviews project status at the start of a session
 - `/pre-flight-git` — prepares repo for new work (clean state, sync, prune)
 - `/new-idea` — explores a new feature or concept
+- `/review-idea-doc` — validates an idea doc before progressing to a plan
 - `/new-plan` — creates a plan (approval gate for contract changes)
+- `/review-plan-doc` — validates a plan for completeness and consistency
 - `/check-plan` — deep review of plan feasibility against the codebase
 - `/new-sprint` — creates a sprint plan (with parallel sub-agent task tags)
+- `/review-sprint-doc` — validates a sprint doc before implementation
 - `/start-sprint` — begins executing the sprint (parallel sub-agents by domain)
 - `/check-sprint` — deep code review after implementation, before verification
 - `/review-sprint` — verification gates + close-out (`--deep` for parallel reviewers)
@@ -47,17 +50,20 @@ ABS (Agent Build System) makes it possible to build confidently with AI agents b
 ## The governance pipeline (how features progress)
 
 ```
-idea -> plan -> check plan -> approval -> sprint -> implementation -> check sprint -> review -> done
+idea → review → plan → review → check → approval → sprint → review → build → check → close
 ```
 
 1. Explore with `/new-idea`
-2. Formalize with `/new-plan` (if schema/API/DB changes needed)
-3. Review feasibility with `/check-plan`
-4. Get approval
-5. Create sprint with `/new-sprint`
-6. Execute with `/start-sprint`
-7. Code review with `/check-sprint`
-8. Close out with `/review-sprint`
+2. Validate idea with `/review-idea-doc`
+3. Formalize with `/new-plan` (if schema/API/DB changes needed)
+4. Validate plan with `/review-plan-doc`
+5. Check feasibility with `/check-plan`
+6. Get approval
+7. Create sprint with `/new-sprint`
+8. Validate sprint with `/review-sprint-doc`
+9. Execute with `/start-sprint`
+10. Code review with `/check-sprint`
+11. Close out with `/review-sprint`
 
 ## Install Documentation (one-time)
 
