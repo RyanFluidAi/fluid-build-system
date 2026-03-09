@@ -43,6 +43,8 @@ ABS (Agent Build System) makes it possible to build confidently with AI agents b
 - `/start-sprint` — begins executing the sprint (parallel sub-agents by domain)
 - `/check-sprint` — deep code review after implementation, before verification
 - `/review-sprint` — verification gates + close-out (`--deep` for parallel reviewers)
+- `/commit` — creates a structured git commit with a clear message
+- `/sync` — syncs your local repo with remote (fetch, pull, prune)
 - `/mini-audit` — creates a quick check document after non-trivial work
 - `/post-merge-git` — cleans up after a PR merge
 - `/close-session` — end-of-session checklist to keep the repo "resume fast"

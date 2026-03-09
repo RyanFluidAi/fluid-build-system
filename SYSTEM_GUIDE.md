@@ -215,12 +215,12 @@ Skills are the primary extension mechanism. Each skill is a directory under `.cl
 
 **Included skills** (26 total):
 
-Governance pipeline:
+Governance pipeline (in order):
 - `new-idea` — explore architecture, create idea artifact
 - `review-idea-doc` — validate idea before it becomes a plan
 - `new-plan` — formal contract-change plan (with best practices and traceability)
+- `review-plan-doc` — validate plan format and completeness before approval
 - `check-plan` — deep feasibility review of plan against codebase reality
-- `review-plan-doc` — validate plan format before approval
 - `new-sprint` — create agent-executable sprint doc (with parallel sub-agent task tags)
 - `review-sprint-doc` — validate sprint doc before implementation
 - `start-sprint` — execute work plan (supports parallel sub-agents by domain)
@@ -408,13 +408,42 @@ Monthly or at major milestones. Goal: comprehensive verification + remediation p
 
 ### 10.1 Starting a session
 
-Use `/start-session` to review project status, active sprint, and blockers. Provides immediate "resume fast" context.
+Use `/start-session` at the beginning of every work session. It reads the status docs and gives you a briefing:
+
+1. Reads `PROJECT_STATUS.md` (active work, latest session log, architectural decisions)
+2. Reads `docs/sprints/CURRENT_STATUS.md` (active sprint, stage, blockers)
+3. Checks `docs/audits/active/` for unresolved P0/P1 issues
+4. Summarizes everything in chat: current sprint, priorities, blockers, suggested next steps
+
+This is the "resume fast" entry point — any session can pick up where the last one left off.
 
 ### 10.2 Closing a session
 
-Use `/close-session` to commit changes, write a session log, update status docs, and ensure the repo is ready for the next session.
+Use `/close-session` at the end of every work session. It ensures the repo is ready for the next session:
 
-Session logs go in `docs/sessions/YYYY-MM-DD.md` (append-only, 1-10 bullets).
+1. Commits and pushes any uncommitted changes
+2. Confirms which workflow was used (small fix, sprint, or audit)
+3. Writes a session log to `docs/sessions/YYYY-MM-DD.md` (append-only, 1-10 bullets)
+4. Updates `PROJECT_STATUS.md` if priorities, sprint, decisions, or audit counts changed
+5. Updates `docs/sprints/CURRENT_STATUS.md` if sprint stage or blockers changed
+6. Checks if contracts changed and ensures plans exist
+7. Checks if roadmap needs updating
+8. Considers whether a new skill should be created or an existing one updated
+9. Adds a session summary to the relevant sprint or audit doc
+10. Shuts down any running dev servers or services
+
+### 10.3 Session log format
+
+Session logs go in `docs/sessions/YYYY-MM-DD.md` (one file per day, append-only):
+
+- **Summary** (1-5 bullets)
+- **Closed / shipped** (0-5 bullets)
+- **Decisions / notes** (0-5 bullets)
+- **Next / blockers** (0-5 bullets)
+
+### 10.4 How sessions connect to sprints
+
+`/start-session` reads the sprint state. `/close-session` updates it. The session log links to the relevant sprint doc. This creates a traceable history: sprint docs track *what* was planned, session logs track *when* it happened.
 
 ---
 

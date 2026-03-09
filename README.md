@@ -2,78 +2,213 @@
 doc_type: agent_build_system
 status: active
 created: 2026-01-25
-updated: 2026-02-25
+updated: 2026-03-09
 ---
 
 # ABS — Agent Build System (Claude Code)
 
-This folder is a **portable starter kit** for setting up the **ABS (Agent Build System)**, so AI agents (and humans) can build confidently with:
+A **portable starter kit** for setting up the **ABS (Agent Build System)**, so AI agents (and humans) can build confidently with:
 
-- **Progressive disclosure** (skills, not giant rules)
-- **One-source-of-truth status** (fast resume)
-- **Governance pipeline** (idea → review → plan → review → check → approval → sprint → review → build → check → close)
-- **Spec-driven execution** (sprints with stage tracking)
-- **Drift control** (mini + in-depth audits)
-- **Session management** (start/close session, knowledge compounding)
+- **Progressive disclosure** — skills loaded on demand, not giant rules
+- **One-source-of-truth status** — fast resume across sessions
+- **Governance pipeline** — idea → review → plan → review → check → approval → sprint → review → build → check → close
+- **Spec-driven execution** — sprints with stage tracking
+- **Drift control** — mini + in-depth audits
+- **Session management** — start/close session, knowledge compounding
 
-## What you get here
+---
 
-- `BUILDERS_QUICKSTART.md`: one-page explanation for non-coders.
-- `SYSTEM_GUIDE.md`: end-to-end explanation of what the system is, how it's structured, and how to maintain it.
-- `INSTALLATION_CHECKLIST.md`: one-page install checklist (new or existing repos).
-- `templates/project-root/`: a **copy/paste** directory tree you can drop into a new project (CLAUDE.md, skills, agents, hooks, rules, plans, sprints, audits, and starter canonical doc stubs).
+## How it works
 
-## Start here (recommended order)
+### The daily cycle
 
-1. Read `BUILDERS_QUICKSTART.md` (simple mental model and the skills you'll use).
-2. Follow `INSTALLATION_CHECKLIST.md` (step-by-step install into a repo).
-3. Use `SYSTEM_GUIDE.md` when you need deeper reference or want to extend ABS.
+```
+/start-session          ← pick up where you left off
+    ↓
+  work (small fix  OR  full governance pipeline)
+    ↓
+  /commit               ← save progress
+    ↓
+/close-session          ← update status docs, write session log, shut down services
+```
 
-## Quick start (port to another repo)
+### The governance pipeline (building features)
 
-0. Check the upstream Claude Code docs for any changes since this kit was created:
+When you're building something significant, work moves through 11 steps:
 
-   - [CLAUDE.md and Memory](https://code.claude.com/docs/en/memory)
-   - [Skills](https://code.claude.com/docs/en/skills)
-   - [Subagents](https://code.claude.com/docs/en/sub-agents)
-   - [Hooks](https://code.claude.com/docs/en/hooks)
-   - [Settings](https://code.claude.com/docs/en/settings)
-   - [MCP Servers](https://code.claude.com/docs/en/mcp)
+```
+ Step  Skill                What happens
+ ───── ──────────────────── ──────────────────────────────────────────
+  1    /new-idea             explore the concept, create an idea doc
+  2    /review-idea-doc      validate the idea is complete and clear
+  3    /new-plan             formalize contract changes into a plan
+  4    /review-plan-doc      validate plan format and completeness
+  5    /check-plan           deep feasibility check against the codebase
+  6    ⏸ approval            you approve the plan before any code is written
+  7    /new-sprint           break the plan into an executable task list
+  8    /review-sprint-doc    validate the sprint doc before building
+  9    /start-sprint         build it (parallel sub-agents by domain)
+ 10    /check-sprint         deep code review of everything that was built
+ 11    /review-sprint        final verification → stage: done
+```
 
-1. Copy the template tree into the new repo root:
+Small fixes (1-3 files, no structural changes) skip the pipeline entirely.
 
-   - Copy everything under `AGENT_BUILD_SYSTEM/templates/project-root/` into the destination repo root.
-   - Then edit the template files to match the project name, architecture, and governance.
+### Sprint stages
 
-2. Fill the "resume fast" docs:
+```
+planning → in_progress → verification → done
+```
 
-   - `CLAUDE.md` (project instructions + governance rules)
-   - `PROJECT_STATUS.md`
-   - `docs/sprints/CURRENT_STATUS.md`
+- `/start-sprint` moves `planning → in_progress`
+- `/check-sprint` moves `in_progress → verification`
+- `/review-sprint` moves `verification → done` (only way to close a sprint)
 
-3. Create the first 3-6 skills in `.claude/skills/` (keep each `SKILL.md` focused).
+---
 
-4. Run `/verify-install` to confirm everything is in place.
+## What's included
 
-5. Run your first **mini audit** after the first non-trivial feature.
+### 26 Skills (type `/` in Claude Code)
 
-## Adopting into an existing repo
+**Governance pipeline (in order):**
 
-If you're installing into a repo that already has docs and processes, do it incrementally:
+| Skill | Purpose |
+|-------|---------|
+| `/new-idea` | Explore a feature concept, create idea doc |
+| `/review-idea-doc` | Validate idea completeness before planning |
+| `/new-plan` | Create formal plan for contract changes |
+| `/review-plan-doc` | Validate plan format and completeness |
+| `/check-plan` | Deep feasibility review against codebase |
+| `/new-sprint` | Create agent-executable task list from approved plan |
+| `/review-sprint-doc` | Validate sprint doc before building |
+| `/start-sprint` | Execute the work plan (parallel sub-agents) |
+| `/check-sprint` | Deep code review after implementation |
+| `/review-sprint` | Final verification + close-out (`--deep` for 6 parallel reviewers) |
 
-- **Phase A**: Add `CLAUDE.md`, `PROJECT_STATUS.md`, `docs/sprints/CURRENT_STATUS.md` (resume fast).
-- **Phase B**: Add `docs/plans/` and `docs/ideas/` (governance gates).
-- **Phase C**: Add `.claude/skills/` once you know your recurring domains.
-- **Phase D**: Add sprint tracking with `docs/sprints/`.
-- **Phase E**: Add audits with `docs/audits/`.
-- **Phase F**: Add `.claude/agents/`, `.claude/settings.json` (hooks), and `.mcp.json`.
-- **Phase G**: Add session management (`/start-session`, `/close-session`) and knowledge compounding (`/compound`).
+**Session management:**
+
+| Skill | Purpose |
+|-------|---------|
+| `/start-session` | Review project status, sprint, blockers at session start |
+| `/close-session` | Commit, write session log, update status docs, shut down services |
+
+**Git workflows:**
+
+| Skill | Purpose |
+|-------|---------|
+| `/commit` | Structured git commit with conventional message |
+| `/sync` | Sync local repo with remote (fetch, pull, prune) |
+| `/pre-flight-git` | Prepare repo for new work (clean state, sync, prune branches) |
+| `/post-merge-git` | Clean up after PR merge (switch to main, delete branch) |
+
+**Audits:**
+
+| Skill | Purpose |
+|-------|---------|
+| `/mini-audit` | Quick drift check after non-trivial changes |
+| `/in-depth-audit` | Comprehensive subsystem audit |
+
+**Documentation:**
+
+| Skill | Purpose |
+|-------|---------|
+| `/documentation-governance` | Canonical doc update rules (auto-loaded) |
+| `/install-documentation` | One-time canonical doc setup |
+
+**Code quality:**
+
+| Skill | Purpose |
+|-------|---------|
+| `/review-code` | Code review for quality, correctness, conventions |
+
+**Utility:**
+
+| Skill | Purpose |
+|-------|---------|
+| `/deploy-app` | Deployment workflow |
+| `/compound` | Document solved problems as reusable solutions |
+| `/skill-creator` | Create new skills |
+| `/create-sub-agent` | Interactive wizard for custom subagents |
+| `/verify-install` | Verify ABS installation completeness |
+
+### 9 Agents
+
+**Execution agents:**
+- `verifier` — validates completed work (read-only)
+- `test-runner` — runs tests and fixes failures
+- `debugger` — root cause analysis and minimal fixes
+
+**Reviewer agents (used by `/review-sprint --deep`):**
+- `architecture-reviewer` — module boundaries, dependency direction
+- `security-reviewer` — auth gaps, injection vectors, data exposure
+- `performance-reviewer` — N+1 queries, missing indexes, re-renders
+- `data-integrity-reviewer` — missing transactions, constraint gaps
+- `test-quality-reviewer` — coverage gaps, weak assertions
+- `docs-governance-reviewer` — undocumented contract changes, stale docs
+
+### 4 Rules
+
+- `foundation.md` — progressive disclosure, governance gates, session checkpoints
+- `workflow-sprints.md` — sprint stage tracking and definition of done
+- `workflow-small-fixes.md` — low-ceremony guardrails for small changes
+- `workflow-audits.md` — drift detection and remediation
+
+### 3 Hooks
+
+- `shell-guard.sh` — blocks risky shell commands (`rm -rf`, `drop table`, `git push --force`)
+- `read-guard.sh` — blocks reading secret files (`.env`, credentials)
+- `format.sh` — auto-formats files after edits
+
+---
+
+## Getting started
+
+### Docs (recommended reading order)
+
+1. `BUILDERS_QUICKSTART.md` — simple mental model and the skills you'll use
+2. `INSTALLATION_CHECKLIST.md` — step-by-step install into a repo
+3. `SYSTEM_GUIDE.md` — deeper reference for extending ABS
+
+### Quick install (new repo)
+
+1. Copy everything under `templates/project-root/` into your repo root
+2. Edit `CLAUDE.md` with your project name, tech stack, conventions
+3. Edit `PROJECT_STATUS.md` with current project state
+4. Edit `docs/sprints/CURRENT_STATUS.md` with active work (or "none yet")
+5. Run `/verify-install` to confirm everything is in place
+
+### Adopting into an existing repo
+
+Do it incrementally:
+
+| Phase | What to add | Purpose |
+|-------|------------|---------|
+| **A** | `CLAUDE.md`, `PROJECT_STATUS.md`, `CURRENT_STATUS.md` | Resume fast |
+| **B** | `docs/plans/`, `docs/ideas/` + templates | Governance gates |
+| **C** | `.claude/skills/` (3-6 initial skills) | Progressive disclosure |
+| **D** | `docs/sprints/` + sprint template | Execution tracking |
+| **E** | `docs/audits/` + audit templates | Drift control |
+| **F** | `.claude/agents/`, `.claude/settings.json`, `.mcp.json` | Automation |
+| **G** | `/start-session`, `/close-session`, `docs/sessions/`, `docs/solutions/` | Session management |
 
 See `SYSTEM_GUIDE.md` for the phased rollout detail.
 
+---
+
 ## Design goals
 
-- **Low token**: don't load the entire repo context; load only relevant skills and the current status doc.
-- **Stable governance**: contract changes are proposed and approved before implementation.
-- **High confidence**: audits and fast checks prevent drift and undocumented behavior.
-- **Resume fast**: any session can pick up where the last one left off via status docs and session logs.
+- **Low token** — don't load the entire repo context; load only relevant skills and the current status doc
+- **Stable governance** — contract changes are proposed and approved before implementation
+- **High confidence** — audits and fast checks prevent drift and undocumented behavior
+- **Resume fast** — any session can pick up where the last one left off via status docs and session logs
+
+## Upstream compatibility
+
+Check the current Claude Code docs for any convention changes:
+
+- [CLAUDE.md and Memory](https://code.claude.com/docs/en/memory)
+- [Skills](https://code.claude.com/docs/en/skills)
+- [Subagents](https://code.claude.com/docs/en/sub-agents)
+- [Hooks](https://code.claude.com/docs/en/hooks)
+- [Settings](https://code.claude.com/docs/en/settings)
+- [MCP Servers](https://code.claude.com/docs/en/mcp)
