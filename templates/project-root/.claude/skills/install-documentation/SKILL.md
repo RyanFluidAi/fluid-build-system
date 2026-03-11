@@ -1,6 +1,6 @@
 ---
 name: install-documentation
-description: Install the canonical documentation set (one-time during ABS setup). Creates the source-of-truth reference docs under docs/reference/.
+description: Install the canonical documentation set (one-time during FBS setup). Creates the source-of-truth reference docs under docs/reference/.
 disable-model-invocation: true
 ---
 
@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 ## Goal
 
-Create or confirm the canonical documentation set under `docs/reference/`. This is a one-time setup during ABS installation.
+Create or confirm the canonical documentation set under `docs/reference/`. This is a one-time setup during FBS installation.
 
 ## Steps
 

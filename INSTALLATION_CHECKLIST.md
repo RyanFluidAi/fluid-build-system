@@ -1,11 +1,11 @@
 ---
-doc_type: abs_installation_checklist
+doc_type: fbs_installation_checklist
 status: active
 created: 2026-01-25
 updated: 2026-02-25
 ---
 
-# ABS (Agent Build System) — Installation Checklist (1 page)
+# FBS (Fluid Build System) — Installation Checklist (1 page)
 
 Use this checklist when installing into a **new** or **existing** repo.
 

@@ -1,13 +1,13 @@
 ---
-doc_type: agent_build_system_guide
+doc_type: fluid_build_system_guide
 status: active
 created: 2026-01-25
 updated: 2026-02-25
 ---
 
-# ABS — Agent Build System — Setup Guide (Portable)
+# FBS — Fluid Build System — Setup Guide (Portable)
 
-This guide explains the **ABS (Agent Build System)** and how to reproduce it in a different project so an AI agent (in Claude Code) can build confidently with clear governance and low drift.
+This guide explains the **FBS (Fluid Build System)** and how to reproduce it in a different project so an AI agent (in Claude Code) can build confidently with clear governance and low drift.
 
 ## Upstream compatibility note
 
@@ -22,15 +22,15 @@ During installation, check the current Claude Code docs for any changes since th
 
 ---
 
-## 1) What ABS is
+## 1) What FBS is
 
-ABS is a **documentation + governance architecture** for AI-assisted development:
+FBS is a **documentation + governance architecture** for AI-assisted development:
 
 - **AI should not "infer" contracts** (schemas, API shapes, business rules). Those are **written canonically**.
 - **AI should not load everything**. It should load a small set of **high-signal documents** and the **relevant skills**.
 - **Work should be tracked** (current status + sprint doc), and drift should be caught early via **audits + fast checks**.
 
-ABS is built from five pillars:
+FBS is built from five pillars:
 
 1. **Rules** (`.claude/rules/`): short workflow guardrails.
 2. **Skills** (`.claude/skills/`): progressive-disclosure guidance by domain.
@@ -253,7 +253,7 @@ Utility:
 - `compound` — document solved problems
 - `skill-creator` — meta-skill for creating new skills
 - `create-sub-agent` — interactive wizard for creating custom subagents
-- `verify-install` — verify ABS installation
+- `verify-install` — verify FBS installation
 
 ### 6.4 Agents (subagents)
 

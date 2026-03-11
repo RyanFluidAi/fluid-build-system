@@ -1,6 +1,6 @@
-# Agent Build System — Maintainer Instructions
+# Fluid Build System — Maintainer Instructions
 
-This repo is the **ABS template kit**. Its sole purpose is maintaining the portable template under `templates/project-root/` that gets copied into target projects.
+This repo is the **FBS template kit**. Its sole purpose is maintaining the portable template under `templates/project-root/` that gets copied into target projects.
 
 ## Repo structure
 

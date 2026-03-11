@@ -5,7 +5,7 @@ status: active
 
 # Agent Operating Manual
 
-This repository uses the **Agent Build System (ABS)** — a governance framework for AI-assisted development with progressive disclosure, approval gates, and drift control.
+This repository uses the **Fluid Build System (FBS)** — a governance framework for AI-assisted development with progressive disclosure, approval gates, and drift control.
 
 ## Resume fast (read in order)
 

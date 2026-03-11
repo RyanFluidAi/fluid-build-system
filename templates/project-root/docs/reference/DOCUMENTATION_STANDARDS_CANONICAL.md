@@ -36,7 +36,7 @@ These standards do not apply to operational/project-management documents, includ
 - sprint docs (`docs/sprints/**`)
 - audits (`docs/audits/**`)
 - plans/change requests (`docs/plans/**`)
-- ABS install guides/checklists and other operational instructions
+- FBS install guides/checklists and other operational instructions
 
 Operational documents may be instructional. Canonical documents must follow the rules below.
 

@@ -1,13 +1,13 @@
 ---
-doc_type: abs_builders_quickstart
+doc_type: fbs_builders_quickstart
 status: active
 created: 2026-01-25
 updated: 2026-02-25
 ---
 
-# ABS for Builders (Non-Coders)
+# FBS for Builders (Non-Coders)
 
-ABS (Agent Build System) makes it possible to build confidently with AI agents by keeping the project organized and verifiable.
+FBS (Fluid Build System) makes it possible to build confidently with AI agents by keeping the project organized and verifiable.
 
 ## The 5 things (simple language)
 
@@ -30,7 +30,7 @@ ABS (Agent Build System) makes it possible to build confidently with AI agents b
 
 ## The skills you'll use most (type `/` in Claude Code)
 
-- `/verify-install` — confirms ABS is installed correctly
+- `/verify-install` — confirms FBS is installed correctly
 - `/start-session` — reviews project status at the start of a session
 - `/pre-flight-git` — prepares repo for new work (clean state, sync, prune)
 - `/new-idea` — explores a new feature or concept
@@ -69,7 +69,7 @@ idea → review → plan → review → check → approval → sprint → review
 
 ## Install Documentation (one-time)
 
-When ABS is first installed into a repo, you install the canonical documentation set once:
+When FBS is first installed into a repo, you install the canonical documentation set once:
 
 - Start with `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md`
 - End with `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`

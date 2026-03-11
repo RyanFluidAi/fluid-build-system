@@ -1,13 +1,13 @@
 ---
-doc_type: agent_build_system
+doc_type: fluid_build_system
 status: active
 created: 2026-01-25
 updated: 2026-03-09
 ---
 
-# ABS — Agent Build System (Claude Code)
+# FBS — Fluid Build System (Claude Code)
 
-A **portable starter kit** for setting up the **ABS (Agent Build System)**, so AI agents (and humans) can build confidently with:
+A **portable starter kit** for setting up the **FBS (Fluid Build System)**, so AI agents (and humans) can build confidently with:
 
 - **Progressive disclosure** — skills loaded on demand, not giant rules
 - **One-source-of-truth status** — fast resume across sessions
@@ -129,7 +129,7 @@ planning → in_progress → verification → done
 | `/compound` | Document solved problems as reusable solutions |
 | `/skill-creator` | Create new skills |
 | `/create-sub-agent` | Interactive wizard for custom subagents |
-| `/verify-install` | Verify ABS installation completeness |
+| `/verify-install` | Verify FBS installation completeness |
 
 ### 9 Agents
 
@@ -167,7 +167,7 @@ planning → in_progress → verification → done
 
 1. `BUILDERS_QUICKSTART.md` — simple mental model and the skills you'll use
 2. `INSTALLATION_CHECKLIST.md` — step-by-step install into a repo
-3. `SYSTEM_GUIDE.md` — deeper reference for extending ABS
+3. `SYSTEM_GUIDE.md` — deeper reference for extending FBS
 
 ### Quick install (new repo)
 

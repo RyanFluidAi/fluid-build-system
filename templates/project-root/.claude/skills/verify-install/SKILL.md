@@ -1,13 +1,13 @@
 ---
 name: verify-install
-description: Verify ABS installation is complete and correctly configured. Use after installing ABS into a repo to confirm everything is in place.
+description: Verify FBS installation is complete and correctly configured. Use after installing FBS into a repo to confirm everything is in place.
 ---
 
-# /verify-install — Verify ABS Installation
+# /verify-install — Verify FBS Installation
 
 ## Goal
 
-Check that all ABS components are properly installed and report any missing items.
+Check that all FBS components are properly installed and report any missing items.
 
 ## Steps
 
