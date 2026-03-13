@@ -36,6 +36,7 @@ If no path is provided:
 Check that all required frontmatter fields are present and valid:
 
 - `doc_type`: must be `sprint`
+- `number`: must be a sequential integer matching the `NNN` in the filename `SPRINT-NNN-*.md`
 - `status`: must be one of `active`, `completed`, `cancelled`
 - `stage`: must be one of `planning`, `in_progress`, `verification`, `done`
 - `created`: valid date

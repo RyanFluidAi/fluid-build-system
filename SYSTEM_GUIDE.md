@@ -111,7 +111,21 @@ Every **create** step has a corresponding **review/check** step:
 6. **Session logs**: `docs/sessions/`
 7. **Solutions library**: `docs/solutions/`
 
-### 3.2 What "canonical" means
+### 3.2 Document naming conventions
+
+Ideas, plans, and sprints use sequential numbering for unambiguous referencing:
+
+| Type | Format | Example |
+|------|--------|---------|
+| Ideas | `IDEA-NNN-YYYY-MM-DD-<topic>.md` | `IDEA-001-2026-03-13-user-authentication.md` |
+| Plans | `PLAN-NNN-YYYY-MM-DD-<topic>.md` | `PLAN-001-2026-03-13-auth-schema-changes.md` |
+| Sprints | `SPRINT-NNN-YYYY-MM-DD-<topic>.md` | `SPRINT-001-2026-03-13-auth-implementation.md` |
+
+- All three use globally sequential numbers (zero-padded to 3 digits).
+- The `number` field in frontmatter must match the filename number.
+- To determine the next number, scan the directory for existing files.
+
+### 3.3 What "canonical" means
 
 Canonical documentation is authoritative. If canonical says "X" and code does "Y", that's drift.
 
@@ -119,7 +133,7 @@ Canonical documentation is authoritative. If canonical says "X" and code does "Y
 - Versioned where it matters (minor vs major changes are explicit).
 - Traceable: link to implementing code and tests when feasible.
 
-### 3.3 Maintenance
+### 3.4 Maintenance
 
 - Edit canonical docs in place; use git history as the change log.
 - If a canonical change is required, write a plan first.
@@ -129,23 +143,35 @@ Canonical documentation is authoritative. If canonical says "X" and code does "Y
 
 ## 4) Install Documentation (one-time)
 
-A one-time process establishing the repo's canonical documentation system (via `/install-documentation`).
+A one-time process establishing the repo's canonical documentation system (via `/install-documentation`). This is a required step — not optional.
 
-### 4.1 Required governance docs
+### 4.1 How it works
 
+`/install-documentation` launches sub-agents in parallel to explore the codebase and create comprehensive canonical docs based on what actually exists in the repo. Three sub-agents handle:
+
+- **Platform Overview** — reads README, config files, and directory structure to document what the project is, its architecture, users, and invariants.
+- **Schema & Contracts** — searches for database models, API routes, type definitions, and validation schemas to document the entity model and API contracts.
+- **Global Terminology** — identifies domain-specific terms, entity names, and business language used in the codebase.
+
+### 4.2 Canonical doc set
+
+Governance docs (rules for all other canonical docs):
 - `docs/reference/DOCUMENTATION_STANDARDS_CANONICAL.md`
 - `docs/reference/DOCUMENTATION_HIERARCHY_CANONICAL.md`
 
-### 4.2 Initial canonical set
-
+Content docs (populated by sub-agents from the actual codebase):
 1. `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md`
 2. `docs/reference/SCHEMA_AND_CONTRACTS_CANONICAL.md`
-3. `docs/reference/DOCUMENTATION_INVENTORY.md` (optional)
-4. `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`
+3. `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`
+4. `docs/reference/DOCUMENTATION_INVENTORY.md`
 
 ### 4.3 "No invention" rule
 
 Document what exists. Don't silently introduce new fields, behaviors, or contracts. Gaps follow the plan/approval workflow.
+
+### 4.4 Verification
+
+`/verify-install` checks whether canonical docs are populated or still contain placeholder markers (`YYYY-MM-DD`, bracket placeholders, ellipsis-only sections). Unpopulated docs are flagged with a prompt to re-run `/install-documentation`.
 
 ---
 
@@ -245,8 +271,6 @@ Code quality:
 
 Git workflows:
 - `sync` — sync local repo with remote (fetch, pull, prune)
-- `pre-flight-git` — prepare repo for new work (clean state, sync, prune branches)
-- `post-merge-git` — clean up after PR merge (switch to main, delete branch, prune)
 
 Utility:
 - `deploy-app` — deployment workflow

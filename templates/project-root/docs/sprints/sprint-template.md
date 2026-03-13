@@ -1,5 +1,6 @@
 ---
 doc_type: sprint
+number: NNN
 status: active
 stage: planning
 created: YYYY-MM-DD
@@ -10,7 +11,7 @@ dates:
 sprint_goal: ""
 ---
 
-# Sprint: <Name>
+# SPRINT-NNN: <Name>
 
 ## Summary
 

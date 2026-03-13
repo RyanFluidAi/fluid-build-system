@@ -1,5 +1,6 @@
 ---
 doc_type: plan
+number: NNN
 status: draft
 created: YYYY-MM-DD
 author: ""
@@ -7,7 +8,7 @@ approver: ""
 related_issues: []
 ---
 
-# Plan: <Title>
+# PLAN-NNN: <Title>
 
 ## Problem Statement
 

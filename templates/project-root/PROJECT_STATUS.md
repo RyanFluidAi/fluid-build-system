@@ -8,7 +8,7 @@ sprint_current_status: docs/sprints/CURRENT_STATUS.md
 active_work: ""
 latest_session_log: ""
 roadmap_next_phase: ""
-canonical_architecture_decision: docs/plans/YYYY-MM-DD-your-architecture-decision.md
+canonical_architecture_decision: docs/plans/PLAN-001-YYYY-MM-DD-your-architecture-decision.md
 active_audits_dir: docs/audits/active/
 skills_index: .claude/skills/
 canonical_reference_root: docs/reference/

@@ -8,7 +8,7 @@ Applies when working on sprint-based development or editing sprint docs under `d
 
 ## Start checklist (required)
 
-- Identify the sprint doc: `docs/sprints/<sprint>.md`
+- Identify the sprint doc: `docs/sprints/SPRINT-NNN-YYYY-MM-DD-<topic>.md`
 - Confirm **stage**: planning -> in_progress -> verification -> done
 - Load relevant skills for the domains touched (usually 2-4 max).
 - If canonical contracts will change: create a plan in `docs/plans/` and wait for approval.

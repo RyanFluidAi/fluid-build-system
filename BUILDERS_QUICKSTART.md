@@ -32,7 +32,6 @@ FBS (Fluid Build System) makes it possible to build confidently with AI agents b
 
 - `/verify-install` — confirms FBS is installed correctly
 - `/start-session` — reviews project status at the start of a session
-- `/pre-flight-git` — prepares repo for new work (clean state, sync, prune)
 - `/new-idea` — explores a new feature or concept
 - `/review-idea-doc` — validates an idea doc before progressing to a plan
 - `/new-plan` — creates a plan (approval gate for contract changes)
@@ -46,7 +45,6 @@ FBS (Fluid Build System) makes it possible to build confidently with AI agents b
 - `/commit` — creates a structured git commit with a clear message
 - `/sync` — syncs your local repo with remote (fetch, pull, prune)
 - `/mini-audit` — creates a quick check document after non-trivial work
-- `/post-merge-git` — cleans up after a PR merge
 - `/close-session` — end-of-session checklist to keep the repo "resume fast"
 
 ## The governance pipeline (how features progress)
@@ -69,9 +67,6 @@ idea → review → plan → review → check → approval → sprint → review
 
 ## Install Documentation (one-time)
 
-When FBS is first installed into a repo, you install the canonical documentation set once:
+When FBS is first installed into a repo, run `/install-documentation` once. This launches sub-agents that explore the codebase and create comprehensive canonical docs under `docs/reference/` based on what actually exists in the repo.
 
-- Start with `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md`
-- End with `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`
-
-This establishes the source-of-truth docs so future features can be documented correctly.
+Run `/verify-install` afterward to confirm all canonical docs are populated (not just placeholder templates).

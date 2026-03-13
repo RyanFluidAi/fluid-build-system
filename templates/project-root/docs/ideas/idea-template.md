@@ -1,5 +1,6 @@
 ---
 doc_type: idea
+number: NNN
 status: draft
 created: YYYY-MM-DD
 last_updated: YYYY-MM-DD
@@ -9,7 +10,7 @@ related_plans: []
 related_sprints: []
 ---
 
-# Idea: <Title>
+# IDEA-NNN: <Title>
 
 ## Summary
 

@@ -64,15 +64,20 @@ Propose a high-level design covering:
 
 ### Phase 6: Create the idea artifact (required)
 
-- Create `docs/ideas/YYYY-MM-DD-<short-topic>.md` using `docs/ideas/idea-template.md`
+- **Determine the next idea number**: scan `docs/ideas/` for existing `IDEA-NNN-*.md` files and use the next sequential number (zero-padded to 3 digits). If no ideas exist, start at `IDEA-001`.
+- Create `docs/ideas/IDEA-NNN-YYYY-MM-DD-<short-topic>.md` using `docs/ideas/idea-template.md`
+  - `NNN` = next sequential number (e.g., `001`, `002`, `003`)
+  - `YYYY-MM-DD` = today's date
+  - `<short-topic>` = kebab-case, 3-6 words
 - Set `status: draft` unless the user explicitly says the idea is accepted
+- Set `number: NNN` in frontmatter
 - Link candidate canonical docs (do not edit canonical docs from an idea; use a plan when required)
 
 ## Output
 
 1. **Architecture summary** — clear decisions on database, API, UI, integrations
 2. **Implementation phases** — logical breakdown of work
-3. **Idea file created** — path to the new `docs/ideas/...` document
+3. **Idea file created** — path to the new `docs/ideas/IDEA-NNN-...` document
 4. **Next step** — suggest using `/new-plan` (if contract changes) or `/new-sprint` (if implementation-only)
 
 ## Important notes

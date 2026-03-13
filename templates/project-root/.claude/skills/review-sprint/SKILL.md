@@ -25,7 +25,7 @@ Optional flag:
 ## What this skill owns (no crossover)
 
 - **Verification**: execute the sprint's test plan (automated + manual) and record results.
-- **Documentation**: ensure canonical documentation is updated (only if approved when required).
+- **Documentation**: analyze what was built and update canonical docs under `docs/reference/` to reflect the current state of the codebase.
 - **Audit + skills decision**: ensure audit state is correct and decide whether a new skill is required.
 
 ## Steps
@@ -61,15 +61,58 @@ If anything fails:
 - Update sprint `stage: verification` and record blockers in the sprint doc and `docs/sprints/CURRENT_STATUS.md`.
 - Stop after documenting what failed and what remains.
 
-### 2) Documentation gates (required when behavior/contracts changed)
+### 2) Documentation gates (required)
 
-Use the sprint doc's **Documentation DoD** as the source of truth.
+Document the code that was built by updating canonical docs under `docs/reference/`. This step always runs — it is not conditional.
 
-- If behavior/contracts changed:
-  - Load the `documentation-governance` skill
-  - Update the correct canonical docs
-  - If a contract-impacting change occurred, confirm a plan exists in `docs/plans/` and is approved
-  - Do not edit canonical docs unless the plan is approved
+#### 2a) Determine what changed
+
+- Read the sprint doc's **Work Plan** (Done section) and **Acceptance Criteria** to understand what was built.
+- Use `git diff` against the sprint's starting point (or the base branch) to identify changed files.
+- Categorize changes: new endpoints, new/modified schemas, new entities, new integrations, UI changes, config changes.
+
+#### 2b) Launch documentation sub-agents in parallel
+
+Spawn sub-agents using the Agent tool to update the canonical docs based on what changed. Only launch agents for docs that need updating — skip any that are unaffected.
+
+**Sub-agent: Platform Overview updater** (launch if architecture, system boundaries, or core concepts changed)
+```
+Prompt: "Read docs/reference/PLATFORM_OVERVIEW_CANONICAL.md and the following changed files: [list].
+Update the canonical doc to reflect any changes to: system boundaries, architecture components, core domain concepts, invariants, users/roles, or integrations.
+Follow the documentation-governance rules: declarative tone, no silent invention, preserve existing wording unless explicitly changed.
+Set last_updated to today's date."
+```
+- **subagent_type**: `general-purpose`, **mode**: `acceptEdits`
+
+**Sub-agent: Schema & Contracts updater** (launch if DB schemas, API routes, types, or validation changed)
+```
+Prompt: "Read docs/reference/SCHEMA_AND_CONTRACTS_CANONICAL.md and the following changed files: [list].
+Update the canonical doc to reflect: new/modified entities, changed fields or constraints, new/modified API endpoints (with request/response shapes), updated error models, or versioning changes.
+Use schema + example + semantics format for each new operational structure.
+Follow the documentation-governance rules: declarative tone, no silent invention, preserve existing wording unless explicitly changed.
+Set last_updated to today's date."
+```
+- **subagent_type**: `general-purpose`, **mode**: `acceptEdits`
+
+**Sub-agent: Terminology updater** (launch if new domain terms, entity names, or status values were introduced)
+```
+Prompt: "Read docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md and the following changed files: [list].
+Add definitions for any new domain-specific terms, entity names, status values, or abbreviations introduced in this sprint.
+Do not duplicate existing terms. Use declarative definitions specific to this project.
+Set last_updated to today's date."
+```
+- **subagent_type**: `general-purpose`, **mode**: `acceptEdits`
+
+#### 2c) Contract-impacting changes gate
+
+- If the sprint changed existing canonical contracts (schemas/API/DB/business rules):
+  - Confirm a plan exists in `docs/plans/` and is approved
+  - Do not update canonical docs for contract changes unless the plan is approved
+- If the sprint only added new behavior without changing existing contracts, canonical docs can be updated without a plan.
+
+#### 2d) Update the Documentation Inventory
+
+After sub-agents complete, update `docs/reference/DOCUMENTATION_INVENTORY.md` to reflect any new sections or gaps identified.
 
 ### 3) Audit system sync (only when canonical surfaces are touched)
 
@@ -130,4 +173,4 @@ At the end, provide:
 4. Learnings captured (key decisions, patterns, pitfalls - 3-7 bullets)
 5. Skills outcome (created/updated/no change - with file links if applicable)
 6. Plan/idea alignment (matched / scope changed / deferred items noted)
-7. Docs/audit outcomes (with file links)
+7. Docs/audit outcomes (with file links and canonical docs updated)

@@ -8,6 +8,10 @@ Sprint documents for spec-driven execution. Each sprint follows a stage progress
 - `SPRINTS/` — individual sprint documents
 - `sprint-template.md` — template for new sprints
 
+## Naming convention
+
+Files use sequential numbering: `SPRINT-NNN-YYYY-MM-DD-<topic>.md` (e.g., `SPRINT-001-2026-03-13-auth-implementation.md`). The `/new-sprint` skill assigns the next available number automatically.
+
 ## Workflow
 
 1. Create sprint via `/new-sprint`

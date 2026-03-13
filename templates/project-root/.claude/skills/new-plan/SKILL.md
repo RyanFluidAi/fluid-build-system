@@ -57,8 +57,9 @@ If not, ask the user to provide:
 
 ### Phase 3: Create the plan file
 
-**Filename format**: `docs/plans/YYYY-MM-DD-<short-topic>.md`
-- Use today's date
+**Filename format**: `docs/plans/PLAN-NNN-YYYY-MM-DD-<short-topic>.md`
+- **Determine the next plan number**: scan `docs/plans/` for existing `PLAN-NNN-*.md` files and use the next sequential number (zero-padded to 3 digits). If no plans exist, start at `PLAN-001`.
+- `YYYY-MM-DD` = today's date
 - Use kebab-case for topic
 - Keep topic concise (3-6 words)
 
@@ -67,6 +68,7 @@ If not, ask the user to provide:
 Use the template structure, ensuring each section is complete:
 
 #### Required Metadata (frontmatter)
+- **Number**: Sequential plan number (matches filename `NNN`)
 - **Status**: Always start as "Draft"
 - **Created**: Today's date
 - **Author**: AI or human name
@@ -126,7 +128,7 @@ Consider:
 ### Phase 5: Review checklist
 
 Before presenting to user, verify:
-- [ ] Filename follows `YYYY-MM-DD-<topic>.md` format
+- [ ] Filename follows `PLAN-NNN-YYYY-MM-DD-<topic>.md` format
 - [ ] All required sections are filled (not just placeholders)
 - [ ] Code examples are realistic (reference actual project patterns)
 - [ ] File paths reference actual locations in the repo

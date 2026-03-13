@@ -20,7 +20,7 @@ Use this checklist when installing into a **new** or **existing** repo.
 
 ## 1) Copy the starter tree
 
-- [ ] Copy everything under `AGENT_BUILD_SYSTEM/templates/project-root/` into the destination repo root.
+- [ ] Copy everything under `templates/project-root/` into the destination repo root.
 
 ## 2) Required "resume fast" docs (fill immediately)
 
@@ -36,17 +36,19 @@ Use this checklist when installing into a **new** or **existing** repo.
 - [ ] `.claude/settings.json` (hooks + permissions)
 - [ ] `.mcp.json` (MCP server connections, if needed)
 
-## 4) Install Documentation (one-time canonical set)
+## 4) Install Documentation (one-time canonical set — required)
 
-- [ ] Create/confirm the documentation governance docs:
+- [ ] Run `/install-documentation` in Claude Code
+  - Launches sub-agents to explore the codebase and create comprehensive canonical docs
+  - Sub-agents run in parallel: platform overview, schema/contracts, and terminology
+  - Creates populated (not placeholder) versions of all canonical docs
+- [ ] Verify all canonical docs are populated (no bracket placeholders or `YYYY-MM-DD` dates):
   - [ ] `docs/reference/DOCUMENTATION_STANDARDS_CANONICAL.md`
   - [ ] `docs/reference/DOCUMENTATION_HIERARCHY_CANONICAL.md`
-- [ ] Create the initial canonical set:
-  - [ ] **Start**: `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md`
+  - [ ] `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md`
   - [ ] `docs/reference/SCHEMA_AND_CONTRACTS_CANONICAL.md`
-  - [ ] (Optional) `docs/reference/DOCUMENTATION_INVENTORY.md`
-  - [ ] **End**: `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`
-- [ ] Run `/install-documentation` to guide this step
+  - [ ] `docs/reference/DOCUMENTATION_INVENTORY.md`
+  - [ ] `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`
 
 ## 5) Bootstrap skills (minimum 3-6)
 
@@ -74,6 +76,7 @@ Use this checklist when installing into a **new** or **existing** repo.
 ## 9) Verify install
 
 - [ ] In Claude Code, type `/verify-install` and fix any missing items it reports.
+- [ ] Confirm canonical docs are flagged as **OK** (not UNPOPULATED). If any are unpopulated, re-run `/install-documentation`.
 
 ## 10) Enable hooks and agents
 

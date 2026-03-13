@@ -98,8 +98,6 @@ planning → in_progress → verification → done
 |-------|---------|
 | `/commit` | Structured git commit with conventional message |
 | `/sync` | Sync local repo with remote (fetch, pull, prune) |
-| `/pre-flight-git` | Prepare repo for new work (clean state, sync, prune branches) |
-| `/post-merge-git` | Clean up after PR merge (switch to main, delete branch) |
 
 **Audits:**
 
@@ -113,7 +111,7 @@ planning → in_progress → verification → done
 | Skill | Purpose |
 |-------|---------|
 | `/documentation-governance` | Canonical doc update rules (auto-loaded) |
-| `/install-documentation` | One-time canonical doc setup |
+| `/install-documentation` | One-time canonical doc setup (uses sub-agents to explore codebase) |
 
 **Code quality:**
 
@@ -175,7 +173,8 @@ planning → in_progress → verification → done
 2. Edit `CLAUDE.md` with your project name, tech stack, conventions
 3. Edit `PROJECT_STATUS.md` with current project state
 4. Edit `docs/sprints/CURRENT_STATUS.md` with active work (or "none yet")
-5. Run `/verify-install` to confirm everything is in place
+5. Run `/install-documentation` to create canonical docs from your codebase
+6. Run `/verify-install` to confirm everything is in place (including populated canonical docs)
 
 ### Adopting into an existing repo
 

@@ -32,6 +32,7 @@ If no path is provided, ask the user which idea doc to review or list files unde
 Check that all required frontmatter fields are present and valid:
 
 - `doc_type`: must be `idea`
+- `number`: must be a sequential integer matching the `NNN` in the filename `IDEA-NNN-*.md`
 - `status`: must be one of `draft`, `accepted`, `parked`, `rejected`
 - `created`: valid date
 - `last_updated`: valid date, not before `created`

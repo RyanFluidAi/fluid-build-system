@@ -23,6 +23,10 @@ Formal plan documents for contract-impacting changes. Plans require explicit app
 5. Implement and update canonical docs
 6. Mark plan as "Implemented"
 
+## Naming convention
+
+Files use sequential numbering: `PLAN-NNN-YYYY-MM-DD-<topic>.md` (e.g., `PLAN-001-2026-03-13-auth-schema-changes.md`). The `/new-plan` skill assigns the next available number automatically.
+
 ## Template
 
 See `plan-template.md` in this directory.

@@ -14,6 +14,7 @@ This repository uses **progressive disclosure** for AI context:
 
 - **Governance**: if a change impacts canonical contracts (schemas/API/DB/business rules), create a plan and wait for explicit approval before implementing.
 - **Don't bloat context**: prefer loading a small number of relevant skills rather than broad repo-wide reading.
+- **Document numbering**: ideas use `IDEA-NNN-YYYY-MM-DD-<topic>.md`, plans use `PLAN-NNN-YYYY-MM-DD-<topic>.md`, sprints use `SPRINT-NNN-YYYY-MM-DD-<topic>.md`. Numbers are globally sequential (zero-padded to 3 digits; scan the directory for the next available number).
 
 ## Required session checkpoints
 

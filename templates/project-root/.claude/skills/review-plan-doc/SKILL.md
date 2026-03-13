@@ -31,6 +31,7 @@ If no path is provided, ask the user which plan doc to review or list files unde
 
 Check that all required metadata fields are present and valid:
 
+- **Number**: must be a sequential integer matching the `NNN` in the filename `PLAN-NNN-*.md`
 - **Status**: must be one of `Draft`, `Review`, `Approved`, `Implemented`, `Rejected`, `Superseded`
 - **Created**: valid date
 - **Author**: non-empty

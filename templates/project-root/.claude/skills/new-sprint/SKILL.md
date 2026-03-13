@@ -31,7 +31,7 @@ $ARGUMENTS
 Gather (or infer from `CURRENT_STATUS.md` + prior docs) the following:
 
 - **Topic**: short sprint topic (3-8 words, kebab-case friendly)
-- **Sprint number**: next sequential number for the month (see filename convention below)
+- **Sprint number**: next globally sequential number (see filename convention below)
 - **Dates**: start/end (YYYY-MM-DD)
 - **Goal**: one-sentence sprint goal
 - **Scope boundaries**: in-scope vs explicit non-goals
@@ -56,14 +56,16 @@ If minimal input is provided, ask the user for the sprint name/topic, planned da
 
 ### Phase 1: Choose the sprint filename + frontmatter
 
-**Filename format**: `docs/sprints/YYYY-MM-sprint-<n>-<topic>.md`
+**Filename format**: `docs/sprints/SPRINT-NNN-YYYY-MM-DD-<topic>.md`
 
-- Use the next available sprint number `<n>` for the month.
+- **Determine the next sprint number**: scan `docs/sprints/` for existing `SPRINT-NNN-*.md` files and use the next sequential number (zero-padded to 3 digits). If no sprints exist, start at `SPRINT-001`.
+- `YYYY-MM-DD` = today's date (sprint creation date).
 - Keep `<topic>` short and descriptive (kebab-case).
 
 **Frontmatter (required)**:
 
 - `doc_type: sprint`
+- `number: NNN` (matches filename)
 - `status: active`
 - `stage: planning` (initial default)
 - `created: YYYY-MM-DD`
