@@ -35,8 +35,8 @@ FBS (Fluid Build System) makes it possible to build confidently with AI agents b
 - `/new-idea` — explores a new feature or concept
 - `/review-idea-doc` — validates an idea doc before progressing to a plan
 - `/new-plan` — creates a plan (approval gate for contract changes)
-- `/review-plan-doc` — validates a plan for completeness and consistency
 - `/check-plan` — deep review of plan feasibility against the codebase
+- `/review-plan-doc` — validates a plan for completeness and consistency
 - `/new-sprint` — creates a sprint plan (with parallel sub-agent task tags)
 - `/review-sprint-doc` — validates a sprint doc before implementation
 - `/start-sprint` — begins executing the sprint (parallel sub-agents by domain)
@@ -56,8 +56,8 @@ idea → review → plan → review → check → approval → sprint → review
 1. Explore with `/new-idea`
 2. Validate idea with `/review-idea-doc`
 3. Formalize with `/new-plan` (if schema/API/DB changes needed)
-4. Validate plan with `/review-plan-doc`
-5. Check feasibility with `/check-plan`
+4. Check feasibility with `/check-plan`
+5. Validate plan with `/review-plan-doc`
 6. Get approval
 7. Create sprint with `/new-sprint`
 8. Validate sprint with `/review-sprint-doc`

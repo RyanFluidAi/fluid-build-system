@@ -24,8 +24,8 @@ This repository uses the **Fluid Build System (FBS)** — a governance framework
 /new-idea          → explore architecture and design
 /review-idea-doc   → validate idea completeness
 /new-plan          → formalize contract changes
-/review-plan-doc   → validate plan format and completeness
 /check-plan        → deep feasibility review against codebase
+/review-plan-doc   → validate plan format and completeness
   ⏸ wait for explicit user approval
 /new-sprint        → create agent-executable work plan
 /review-sprint-doc → validate sprint doc before building

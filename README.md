@@ -42,8 +42,8 @@ When you're building something significant, work moves through 11 steps:
   1    /new-idea             explore the concept, create an idea doc
   2    /review-idea-doc      validate the idea is complete and clear
   3    /new-plan             formalize contract changes into a plan
-  4    /review-plan-doc      validate plan format and completeness
-  5    /check-plan           deep feasibility check against the codebase
+  4    /check-plan           deep feasibility check against the codebase
+  5    /review-plan-doc      validate plan format and completeness
   6    ⏸ approval            you approve the plan before any code is written
   7    /new-sprint           break the plan into an executable task list
   8    /review-sprint-doc    validate the sprint doc before building
@@ -77,8 +77,8 @@ planning → in_progress → verification → done
 | `/new-idea` | Explore a feature concept, create idea doc |
 | `/review-idea-doc` | Validate idea completeness before planning |
 | `/new-plan` | Create formal plan for contract changes |
-| `/review-plan-doc` | Validate plan format and completeness |
 | `/check-plan` | Deep feasibility review against codebase |
+| `/review-plan-doc` | Validate plan format and completeness |
 | `/new-sprint` | Create agent-executable task list from approved plan |
 | `/review-sprint-doc` | Validate sprint doc before building |
 | `/start-sprint` | Execute the work plan (parallel sub-agents) |

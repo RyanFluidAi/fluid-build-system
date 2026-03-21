@@ -62,8 +62,8 @@ FBS is built from five pillars:
   1    /new-idea             explore architecture and design
   2    /review-idea-doc      validate idea completeness
   3    /new-plan             formalize contract changes
-  4    /review-plan-doc      validate plan format and completeness
-  5    /check-plan           deep feasibility review against codebase
+  4    /check-plan           deep feasibility review against codebase
+  5    /review-plan-doc      validate plan format and completeness
   6    ⏸ approval            wait for explicit user approval
   7    /new-sprint           create agent-executable work plan
   8    /review-sprint-doc    validate sprint doc before building
@@ -77,7 +77,7 @@ Every **create** step has a corresponding **review/check** step:
 | Create | Format review | Deep review |
 |--------|--------------|-------------|
 | `/new-idea` | `/review-idea-doc` | — |
-| `/new-plan` | `/review-plan-doc` | `/check-plan` |
+| `/new-plan` | `/check-plan` | `/review-plan-doc` |
 | `/new-sprint` | `/review-sprint-doc` | — |
 | `/start-sprint` (build) | — | `/check-sprint` |
 | — | — | `/review-sprint` (final gate) |
@@ -245,8 +245,8 @@ Governance pipeline (in order):
 - `new-idea` — explore architecture, create idea artifact
 - `review-idea-doc` — validate idea before it becomes a plan
 - `new-plan` — formal contract-change plan (with best practices and traceability)
-- `review-plan-doc` — validate plan format and completeness before approval
 - `check-plan` — deep feasibility review of plan against codebase reality
+- `review-plan-doc` — validate plan format and completeness before approval
 - `new-sprint` — create agent-executable sprint doc (with parallel sub-agent task tags)
 - `review-sprint-doc` — validate sprint doc before implementation
 - `start-sprint` — execute work plan (supports parallel sub-agents by domain)
@@ -376,8 +376,8 @@ Not required for:
 1. Explore via `/new-idea`
 2. Validate idea via `/review-idea-doc`
 3. Create plan via `/new-plan`
-4. Validate plan format via `/review-plan-doc`
-5. Check feasibility via `/check-plan`
+4. Check feasibility via `/check-plan`
+5. Validate plan format via `/review-plan-doc`
 6. Wait for explicit user approval
 7. Create sprint via `/new-sprint`
 8. Validate sprint doc via `/review-sprint-doc`
