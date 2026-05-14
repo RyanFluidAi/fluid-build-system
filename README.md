@@ -2,7 +2,7 @@
 doc_type: fluid_build_system
 status: active
 created: 2026-01-25
-updated: 2026-03-09
+updated: 2026-05-13
 ---
 
 # FBS — Fluid Build System (Claude Code)
@@ -11,9 +11,10 @@ A **portable starter kit** for setting up the **FBS (Fluid Build System)**, so A
 
 - **Progressive disclosure** — skills loaded on demand, not giant rules
 - **One-source-of-truth status** — fast resume across sessions
-- **Governance pipeline** — idea → review → plan → review → check → approval → sprint → review → build → check → close
+- **Governance pipeline** — idea → plan → check → approval → sprint → build → check → close
 - **Spec-driven execution** — sprints with stage tracking
 - **Drift control** — mini + in-depth audits
+- **Decoupled documentation** — canonical docs maintained out-of-band via `/doc-audit` and `/doc-sprint-sync` (not gated to sprint close)
 - **Session management** — start/close session, knowledge compounding
 
 ---
@@ -27,14 +28,12 @@ A **portable starter kit** for setting up the **FBS (Fluid Build System)**, so A
     ↓
   work (small fix  OR  full governance pipeline)
     ↓
-  /commit               ← save progress
-    ↓
-/close-session          ← update status docs, write session log, shut down services
+/close-session          ← commit, update status docs, write session log, shut down services
 ```
 
 ### The governance pipeline (building features)
 
-When you're building something significant, work moves through 11 steps:
+When you're building something significant, work moves through 8 steps:
 
 ```
  Step  Skill                What happens
@@ -43,14 +42,14 @@ When you're building something significant, work moves through 11 steps:
   2    /review-idea-doc      validate the idea is complete and clear
   3    /new-plan             formalize contract changes into a plan
   4    /check-plan           deep feasibility check against the codebase
-  5    /review-plan-doc      validate plan format and completeness
-  6    ⏸ approval            you approve the plan before any code is written
-  7    /new-sprint           break the plan into an executable task list
-  8    /review-sprint-doc    validate the sprint doc before building
-  9    /start-sprint         build it (parallel sub-agents by domain)
- 10    /check-sprint         deep code review of everything that was built
- 11    /review-sprint        final verification → stage: done
+  5    ⏸ approval            you approve the plan before any code is written
+  6    /new-sprint           break the plan into an executable task list (self-validates)
+  7    /start-sprint         build it (parallel sub-agents by domain)
+  8    /check-sprint         deep code review of everything that was built
+  9    /review-sprint        final verification → stage: done
 ```
+
+After sprint close, optionally run `/doc-sprint-sync` to refresh canonical docs in `docs/reference/`. Documentation sync is decoupled from sprint close — it's a separate, owner-triggered workflow.
 
 Small fixes (1-3 files, no structural changes) skip the pipeline entirely.
 
@@ -68,7 +67,7 @@ planning → in_progress → verification → done
 
 ## What's included
 
-### 26 Skills (type `/` in Claude Code)
+### 21 Skills (type `/` in Claude Code)
 
 **Governance pipeline (in order):**
 
@@ -78,9 +77,7 @@ planning → in_progress → verification → done
 | `/review-idea-doc` | Validate idea completeness before planning |
 | `/new-plan` | Create formal plan for contract changes |
 | `/check-plan` | Deep feasibility review against codebase |
-| `/review-plan-doc` | Validate plan format and completeness |
-| `/new-sprint` | Create agent-executable task list from approved plan |
-| `/review-sprint-doc` | Validate sprint doc before building |
+| `/new-sprint` | Create agent-executable task list (self-validates) |
 | `/start-sprint` | Execute the work plan (parallel sub-agents) |
 | `/check-sprint` | Deep code review after implementation |
 | `/review-sprint` | Final verification + close-out (`--deep` for 6 parallel reviewers) |
@@ -96,7 +93,6 @@ planning → in_progress → verification → done
 
 | Skill | Purpose |
 |-------|---------|
-| `/commit` | Structured git commit with conventional message |
 | `/sync` | Sync local repo with remote (fetch, pull, prune) |
 
 **Audits:**
@@ -106,27 +102,22 @@ planning → in_progress → verification → done
 | `/mini-audit` | Quick drift check after non-trivial changes |
 | `/in-depth-audit` | Comprehensive subsystem audit |
 
-**Documentation:**
+**Documentation (decoupled from sprint close):**
 
 | Skill | Purpose |
 |-------|---------|
-| `/documentation-governance` | Canonical doc update rules (auto-loaded) |
-| `/install-documentation` | One-time canonical doc setup (uses sub-agents to explore codebase) |
-
-**Code quality:**
-
-| Skill | Purpose |
-|-------|---------|
-| `/review-code` | Code review for quality, correctness, conventions |
+| `/install-documentation` | One-time canonical doc setup (sub-agents explore the codebase) |
+| `/doc-audit` | Scan codebase against canonical docs and produce a gap report |
+| `/doc-sprint-sync` | Manual post-sprint sync — refresh canonical docs for what changed |
+| `/doc-write` | Writing standards (loaded by the doc skills above; not user-invocable) |
+| `documentation-governance` | High-level non-negotiables + pointers to the four doc skills |
 
 **Utility:**
 
 | Skill | Purpose |
 |-------|---------|
-| `/deploy-app` | Deployment workflow |
 | `/compound` | Document solved problems as reusable solutions |
 | `/skill-creator` | Create new skills |
-| `/create-sub-agent` | Interactive wizard for custom subagents |
 | `/verify-install` | Verify FBS installation completeness |
 
 ### 9 Agents

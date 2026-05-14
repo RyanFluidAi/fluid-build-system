@@ -2,7 +2,7 @@
 doc_type: fluid_build_system_guide
 status: active
 created: 2026-01-25
-updated: 2026-02-25
+updated: 2026-05-13
 ---
 
 # FBS — Fluid Build System — Setup Guide (Portable)
@@ -54,7 +54,7 @@ FBS is built from five pillars:
 
 ### 2.2 The execution loop (how features get built)
 
-**Governance pipeline** (11 steps):
+**Governance pipeline** (8 steps + optional doc sync):
 
 ```
  Step  Skill                Purpose
@@ -63,24 +63,23 @@ FBS is built from five pillars:
   2    /review-idea-doc      validate idea completeness
   3    /new-plan             formalize contract changes
   4    /check-plan           deep feasibility review against codebase
-  5    /review-plan-doc      validate plan format and completeness
-  6    ⏸ approval            wait for explicit user approval
-  7    /new-sprint           create agent-executable work plan
-  8    /review-sprint-doc    validate sprint doc before building
-  9    /start-sprint         execute the work plan (parallel sub-agents)
- 10    /check-sprint         deep code review after implementation
- 11    /review-sprint        verification + close-out → stage: done
+  5    ⏸ approval            wait for explicit user approval
+  6    /new-sprint           create agent-executable work plan (self-validates)
+  7    /start-sprint         execute the work plan (parallel sub-agents)
+  8    /check-sprint         deep code review after implementation
+  9    /review-sprint        verification + close-out → stage: done
+ 10    /doc-sprint-sync      (optional, manual) refresh canonical docs
 ```
 
 Every **create** step has a corresponding **review/check** step:
 
-| Create | Format review | Deep review |
-|--------|--------------|-------------|
-| `/new-idea` | `/review-idea-doc` | — |
-| `/new-plan` | `/check-plan` | `/review-plan-doc` |
-| `/new-sprint` | `/review-sprint-doc` | — |
-| `/start-sprint` (build) | — | `/check-sprint` |
-| — | — | `/review-sprint` (final gate) |
+| Create | Review |
+|--------|--------|
+| `/new-idea` | `/review-idea-doc` |
+| `/new-plan` | `/check-plan` |
+| `/new-sprint` | (self-validates) |
+| `/start-sprint` (build) | `/check-sprint` |
+| — | `/review-sprint` (final gate) |
 
 **Small fixes** skip the pipeline — follow `.claude/rules/workflow-small-fixes.md`.
 
@@ -158,6 +157,8 @@ A one-time process establishing the repo's canonical documentation system (via `
 Governance docs (rules for all other canonical docs):
 - `docs/reference/DOCUMENTATION_STANDARDS_CANONICAL.md`
 - `docs/reference/DOCUMENTATION_HIERARCHY_CANONICAL.md`
+- `docs/reference/DOCUMENT_MAINTENANCE_GUIDE_CANONICAL.md`
+- `docs/reference/DOCUMENT_TEMPLATE_CANONICAL.md`
 
 Content docs (populated by sub-agents from the actual codebase):
 1. `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md`
@@ -175,22 +176,33 @@ Document what exists. Don't silently introduce new fields, behaviors, or contrac
 
 ---
 
-## 5) Ongoing Documentation (per sprint)
+## 5) Ongoing Documentation (decoupled from sprint close)
 
-### 5.1 Required skill
+Canonical doc maintenance is a **separate workflow** from sprint execution. Sprints close on verification only; documentation is refreshed manually after the fact when the owner decides it's worth doing.
 
-Use the `documentation-governance` skill when updating canonical docs. It is configured as `user-invocable: false` so Claude loads it automatically when relevant.
+### 5.1 The four doc skills
+
+| Skill | When | Notes |
+|-------|------|-------|
+| `/install-documentation` | Once, during FBS setup | Sub-agents explore the codebase and create the initial canonical doc set |
+| `/doc-audit` | On demand | Scans the codebase against existing canonical docs; produces a prioritised gap report |
+| `/doc-sprint-sync` | After a sprint | Manually invoked. Reads the sprint diff, updates affected canonical docs |
+| `/doc-write` | Auto-loaded | Writing standards (schema + example + semantics, tone, prohibited words). Not user-invocable. |
+| `documentation-governance` | Auto-loaded | High-level non-negotiables and pointers to the four skills above |
 
 ### 5.2 Sprint Definition of Done
 
 Before sprint stage moves to `done`:
-- new behavior is documented
-- new/changed schema/API/DB is documented with schema+example+semantics
-- global terminology index is updated when new terms are introduced
+- Implementation matches acceptance criteria
+- Required tests/build checks pass
+- Contract-impacting changes have approved plans
+- Mini audit completed if canonical surfaces were touched
+
+Canonical-doc updates (`docs/reference/`) are **not** a DoD item. They are owner-triggered post-close.
 
 ### 5.3 Audit role
 
-Mini and in-depth audits include a documentation completeness check.
+Mini and in-depth audits flag documentation drift but do not block sprint close. Address drift via `/doc-audit` or `/doc-sprint-sync` when worth doing.
 
 ---
 
@@ -239,16 +251,14 @@ Skills are the primary extension mechanism. Each skill is a directory under `.cl
 | `agent` | Which subagent type when `context: fork` |
 | `allowed-tools` | Auto-approve specific tools when this skill is active |
 
-**Included skills** (26 total):
+**Included skills** (21 total):
 
 Governance pipeline (in order):
 - `new-idea` — explore architecture, create idea artifact
 - `review-idea-doc` — validate idea before it becomes a plan
-- `new-plan` — formal contract-change plan (with best practices and traceability)
+- `new-plan` — formal contract-change plan
 - `check-plan` — deep feasibility review of plan against codebase reality
-- `review-plan-doc` — validate plan format and completeness before approval
-- `new-sprint` — create agent-executable sprint doc (with parallel sub-agent task tags)
-- `review-sprint-doc` — validate sprint doc before implementation
+- `new-sprint` — create agent-executable sprint doc (self-validates; parallel sub-agent task tags)
 - `start-sprint` — execute work plan (supports parallel sub-agents by domain)
 - `check-sprint` — deep code review of sprint changes before verification
 - `review-sprint` — verification gates + close-out (`--deep` for parallel reviewer subagents)
@@ -261,22 +271,19 @@ Audits:
 - `mini-audit` — targeted drift check
 - `in-depth-audit` — comprehensive subsystem audit
 
-Documentation:
-- `documentation-governance` — canonical doc update rules (background knowledge)
+Documentation (decoupled from sprint close):
 - `install-documentation` — one-time canonical doc setup
-
-Code quality:
-- `commit` — structured git commit with conventional message format
-- `review-code` — code review for quality, correctness, and conventions
+- `doc-audit` — gap report between codebase and canonical docs
+- `doc-sprint-sync` — manual post-sprint canonical doc refresh
+- `doc-write` — writing standards (auto-loaded by the three above)
+- `documentation-governance` — high-level non-negotiables + pointers
 
 Git workflows:
 - `sync` — sync local repo with remote (fetch, pull, prune)
 
 Utility:
-- `deploy-app` — deployment workflow
 - `compound` — document solved problems
 - `skill-creator` — meta-skill for creating new skills
-- `create-sub-agent` — interactive wizard for creating custom subagents
 - `verify-install` — verify FBS installation
 
 ### 6.4 Agents (subagents)
@@ -377,14 +384,13 @@ Not required for:
 2. Validate idea via `/review-idea-doc`
 3. Create plan via `/new-plan`
 4. Check feasibility via `/check-plan`
-5. Validate plan format via `/review-plan-doc`
-6. Wait for explicit user approval
-7. Create sprint via `/new-sprint`
-8. Validate sprint doc via `/review-sprint-doc`
-9. Implement via `/start-sprint` and update canonical docs
-10. Code review via `/check-sprint`
-11. Verify and close via `/review-sprint`
-12. Mark plan as "Implemented"
+5. Wait for explicit user approval
+6. Create sprint via `/new-sprint` (self-validates)
+7. Implement via `/start-sprint`
+8. Code review via `/check-sprint`
+9. Verify and close via `/review-sprint`
+10. (Optional) Refresh canonical docs via `/doc-sprint-sync`
+11. Mark plan as "Implemented"
 
 ---
 

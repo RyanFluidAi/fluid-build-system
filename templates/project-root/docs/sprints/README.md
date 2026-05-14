@@ -14,7 +14,8 @@ Files use sequential numbering: `SPRINT-NNN-YYYY-MM-DD-<topic>.md` (e.g., `SPRIN
 
 ## Workflow
 
-1. Create sprint via `/new-sprint`
-2. Review doc via `/review-sprint-doc`
-3. Start implementation via `/start-sprint`
+1. Create sprint via `/new-sprint` (self-validates)
+2. Start implementation via `/start-sprint`
+3. Deep code review via `/check-sprint`
 4. Close sprint via `/review-sprint`
+5. (Optional, manual) Refresh canonical docs via `/doc-sprint-sync`

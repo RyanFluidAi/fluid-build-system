@@ -1,16 +1,18 @@
 ---
 name: review-sprint
-description: Verify a sprint and close it (tests + docs + audit/skills gates). The only workflow that should move a sprint to stage done.
+description: Verify a sprint and close it (tests + skills gates). The only workflow that should move a sprint to stage done.
 argument-hint: "[optional: sprint doc path under docs/sprints/]"
 ---
 
-# /review-sprint — Sprint Review (Verification + Documentation Gates)
+# /review-sprint — Sprint Review (Verification Gates)
 
 ## Goal
 
-Run the sprint verification and documentation gates, then update sprint stage/status and resume-fast docs.
+Run the sprint verification gates, then update sprint stage/status and resume-fast docs.
 
 This skill is the **only** workflow that should move a sprint to `stage: done`.
+
+Documentation sync is **not** part of this workflow. Canonical docs under `docs/reference/` are updated manually via `/doc-sprint-sync` when the owner decides it's worth doing.
 
 ## Inputs
 
@@ -25,8 +27,9 @@ Optional flag:
 ## What this skill owns (no crossover)
 
 - **Verification**: execute the sprint's test plan (automated + manual) and record results.
-- **Documentation**: analyze what was built and update canonical docs under `docs/reference/` to reflect the current state of the codebase.
 - **Audit + skills decision**: ensure audit state is correct and decide whether a new skill is required.
+
+Documentation sync is **not** owned by this skill. Run `/doc-sprint-sync` manually when you want canonical docs refreshed.
 
 ## Steps
 
@@ -61,58 +64,12 @@ If anything fails:
 - Update sprint `stage: verification` and record blockers in the sprint doc and `docs/sprints/CURRENT_STATUS.md`.
 - Stop after documenting what failed and what remains.
 
-### 2) Documentation gates (required)
+### 2) Documentation (manual, not gated)
 
-Document the code that was built by updating canonical docs under `docs/reference/`. This step always runs — it is not conditional.
+Canonical documentation sync is **not** part of this workflow. Do not spawn doc sub-agents here and do not block sprint close on documentation.
 
-#### 2a) Determine what changed
-
-- Read the sprint doc's **Work Plan** (Done section) and **Acceptance Criteria** to understand what was built.
-- Use `git diff` against the sprint's starting point (or the base branch) to identify changed files.
-- Categorize changes: new endpoints, new/modified schemas, new entities, new integrations, UI changes, config changes.
-
-#### 2b) Launch documentation sub-agents in parallel
-
-Spawn sub-agents using the Agent tool to update the canonical docs based on what changed. Only launch agents for docs that need updating — skip any that are unaffected.
-
-**Sub-agent: Platform Overview updater** (launch if architecture, system boundaries, or core concepts changed)
-```
-Prompt: "Read docs/reference/PLATFORM_OVERVIEW_CANONICAL.md and the following changed files: [list].
-Update the canonical doc to reflect any changes to: system boundaries, architecture components, core domain concepts, invariants, users/roles, or integrations.
-Follow the documentation-governance rules: declarative tone, no silent invention, preserve existing wording unless explicitly changed.
-Set last_updated to today's date."
-```
-- **subagent_type**: `general-purpose`, **mode**: `acceptEdits`
-
-**Sub-agent: Schema & Contracts updater** (launch if DB schemas, API routes, types, or validation changed)
-```
-Prompt: "Read docs/reference/SCHEMA_AND_CONTRACTS_CANONICAL.md and the following changed files: [list].
-Update the canonical doc to reflect: new/modified entities, changed fields or constraints, new/modified API endpoints (with request/response shapes), updated error models, or versioning changes.
-Use schema + example + semantics format for each new operational structure.
-Follow the documentation-governance rules: declarative tone, no silent invention, preserve existing wording unless explicitly changed.
-Set last_updated to today's date."
-```
-- **subagent_type**: `general-purpose`, **mode**: `acceptEdits`
-
-**Sub-agent: Terminology updater** (launch if new domain terms, entity names, or status values were introduced)
-```
-Prompt: "Read docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md and the following changed files: [list].
-Add definitions for any new domain-specific terms, entity names, status values, or abbreviations introduced in this sprint.
-Do not duplicate existing terms. Use declarative definitions specific to this project.
-Set last_updated to today's date."
-```
-- **subagent_type**: `general-purpose`, **mode**: `acceptEdits`
-
-#### 2c) Contract-impacting changes gate
-
-- If the sprint changed existing canonical contracts (schemas/API/DB/business rules):
-  - Confirm a plan exists in `docs/plans/` and is approved
-  - Do not update canonical docs for contract changes unless the plan is approved
-- If the sprint only added new behavior without changing existing contracts, canonical docs can be updated without a plan.
-
-#### 2d) Update the Documentation Inventory
-
-After sub-agents complete, update `docs/reference/DOCUMENTATION_INVENTORY.md` to reflect any new sections or gaps identified.
+- If the sprint changed contracts/behavior that require canonical doc updates, surface this in the output as a reminder (e.g., "Owner may want to run `/doc-sprint-sync` — schema/API changed").
+- If a contract-impacting change occurred and the plan approval gate is still pending, note that as a blocker — but doc sync itself is still the owner's call, run manually.
 
 ### 3) Audit system sync (only when canonical surfaces are touched)
 
@@ -156,7 +113,7 @@ If a non-obvious issue was solved (debugging required, likely to recur), run `/c
 ### 8) Close-out updates (required)
 
 - In the sprint doc:
-  - ensure acceptance criteria and verification/doc/audit checkboxes are accurate
+  - ensure acceptance criteria and verification checkboxes are accurate
   - set `stage: done` only when all gates pass
 - In `docs/sprints/CURRENT_STATUS.md`:
   - update stage and priorities/blockers
@@ -173,4 +130,27 @@ At the end, provide:
 4. Learnings captured (key decisions, patterns, pitfalls - 3-7 bullets)
 5. Skills outcome (created/updated/no change - with file links if applicable)
 6. Plan/idea alignment (matched / scope changed / deferred items noted)
-7. Docs/audit outcomes (with file links and canonical docs updated)
+7. Audit outcome (mini audit created/updated, or N/A if no canonical surfaces touched)
+8. Docs reminder (optional — one line flagging whether `/doc-sprint-sync` is worth running, based on what changed)
+
+---
+
+## Position in the workflow
+
+`/review-sprint` is the **final step** in the sprint lifecycle. It should only be run after implementation is complete and `/check-sprint` issues have been resolved.
+
+The full sprint workflow is:
+
+```
+🚀 /new-sprint   → create sprint execution plan + self-validate
+   🔧 resolve ⚠ items if any
+🔨 /start-sprint → execute implementation
+🔍 /check-sprint → deep code review of completed work
+   🔧 fix issues found
+✅ /review-sprint → verification gates + close sprint (this skill)
+```
+
+After a sprint is closed, consider:
+- **`/doc-sprint-sync`** — if the sprint changed contracts/behavior worth documenting in `docs/reference/`
+- **`/compound`** — if a non-obvious problem was solved during the sprint, capture it as a solution entry
+- **`/close-session`** — if ending the session, run the end-of-session checklist

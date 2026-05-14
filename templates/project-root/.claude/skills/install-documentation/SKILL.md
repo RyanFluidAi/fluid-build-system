@@ -19,10 +19,12 @@ Create or confirm the canonical documentation set under `docs/reference/`. This 
 
 ### 2) Create governance docs first (these rarely need codebase exploration)
 
-Create or confirm these two governance docs (they define the rules for all other canonical docs):
+Create or confirm these four governance docs (they define the rules for all other canonical docs):
 
 1. `docs/reference/DOCUMENTATION_STANDARDS_CANONICAL.md` — governs all canonical docs (declarative tone, schema+example+semantics, no silent field introduction). The template version is already comprehensive — confirm it exists and set the dates.
 2. `docs/reference/DOCUMENTATION_HIERARCHY_CANONICAL.md` — source-of-truth precedence stack. Confirm it exists and set the dates.
+3. `docs/reference/DOCUMENT_MAINTENANCE_GUIDE_CANONICAL.md` — creation, editing, versioning, and supersession rules for canonical docs. Confirm it exists and set the dates.
+4. `docs/reference/DOCUMENT_TEMPLATE_CANONICAL.md` — copy/paste template for new canonical docs with required sections, frontmatter definitions, and common patterns (API endpoint, database table). Confirm it exists and set the dates.
 
 ### 3) Launch sub-agents to explore the codebase
 

@@ -17,10 +17,10 @@ Formal plan documents for contract-impacting changes. Plans require explicit app
 ## Workflow
 
 1. Create plan via `/new-plan`
-2. Review via `/review-plan-doc`
+2. Deep-review via `/check-plan` (feasibility against codebase)
 3. Get explicit approval
 4. Create sprint via `/new-sprint`
-5. Implement and update canonical docs
+5. Implement, close via `/review-sprint`, then optionally refresh canonical docs via `/doc-sprint-sync`
 6. Mark plan as "Implemented"
 
 ## Naming convention

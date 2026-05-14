@@ -2,7 +2,7 @@
 doc_type: fbs_installation_checklist
 status: active
 created: 2026-01-25
-updated: 2026-02-25
+updated: 2026-05-13
 ---
 
 # FBS (Fluid Build System) — Installation Checklist (1 page)
@@ -45,16 +45,19 @@ Use this checklist when installing into a **new** or **existing** repo.
 - [ ] Verify all canonical docs are populated (no bracket placeholders or `YYYY-MM-DD` dates):
   - [ ] `docs/reference/DOCUMENTATION_STANDARDS_CANONICAL.md`
   - [ ] `docs/reference/DOCUMENTATION_HIERARCHY_CANONICAL.md`
+  - [ ] `docs/reference/DOCUMENT_MAINTENANCE_GUIDE_CANONICAL.md`
+  - [ ] `docs/reference/DOCUMENT_TEMPLATE_CANONICAL.md`
   - [ ] `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md`
   - [ ] `docs/reference/SCHEMA_AND_CONTRACTS_CANONICAL.md`
   - [ ] `docs/reference/DOCUMENTATION_INVENTORY.md`
   - [ ] `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`
 
-## 5) Bootstrap skills (minimum 3-6)
+## 5) Skills (21 included; add domain skills as needed)
 
-- [ ] Create 3-6 skills under `.claude/skills/<skill-name>/SKILL.md`
+- [ ] Confirm the 21 included skills are present under `.claude/skills/<skill-name>/SKILL.md`
 - [ ] Ensure **frontmatter `name` exactly matches folder name** and is lowercase/hyphenated
-- [ ] Include `documentation-governance` skill (required)
+- [ ] Doc skills shipped: `install-documentation`, `doc-audit`, `doc-sprint-sync`, `doc-write`, `documentation-governance`
+- [ ] Add project-specific domain skills (3-6 is a healthy starting point)
 
 ## 6) Bootstrap governance (ideas + plans)
 

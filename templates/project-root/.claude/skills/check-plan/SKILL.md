@@ -12,7 +12,7 @@ allowed-tools: Read, Glob, Grep
 
 Perform a thorough review of a plan document before it is approved. Cross-reference the plan against the actual codebase to verify feasibility, check for gaps in the specification, and identify risks that weren't considered. Produce a prioritized findings list so the plan can be improved before approval.
 
-**This is NOT `/review-plan-doc`** (which checks structural completeness of the document format). This skill reads the plan like a senior engineer evaluating whether it will actually work.
+This skill reads the plan like a senior engineer evaluating whether it will actually work — feasibility, gaps, and risks, not just structural completeness.
 
 ## Inputs
 

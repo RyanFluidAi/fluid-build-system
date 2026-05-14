@@ -7,8 +7,6 @@ description: Sync the local repo with remote. Checks for uncommitted work, pulls
 
 Quick skill to get the local repo in sync with remote. Handles dirty state safely.
 
-> **See also**: `/pre-flight-git` for a more thorough pre-work preparation that includes branch cleanup.
-
 ## Steps (execute all in order)
 
 ### 1. Check working tree status

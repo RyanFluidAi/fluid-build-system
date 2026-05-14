@@ -25,16 +25,16 @@ This repository uses the **Fluid Build System (FBS)** — a governance framework
 /review-idea-doc   → validate idea completeness
 /new-plan          → formalize contract changes
 /check-plan        → deep feasibility review against codebase
-/review-plan-doc   → validate plan format and completeness
   ⏸ wait for explicit user approval
-/new-sprint        → create agent-executable work plan
-/review-sprint-doc → validate sprint doc before building
+/new-sprint        → create agent-executable work plan (self-validates)
 /start-sprint      → execute the work plan
 /check-sprint      → deep code review after implementation
 /review-sprint     → verification gates + close-out → stage: done
+/doc-sprint-sync   → (optional, manual) refresh canonical docs in docs/reference/
 ```
 
 - `/review-sprint` supports `--deep` for parallel reviewer subagents (architecture, security, performance, data integrity, test quality, docs governance)
+- Documentation sync is **not** a sprint-close gate. Sprints close on verification; canonical docs are updated manually post-close via `/doc-sprint-sync`.
 
 ## Workflows
 
@@ -58,10 +58,13 @@ At the end of a session (or use `/close-session`):
 - State whether a new skill should be created/updated.
 - State whether an audit, plan, or roadmap update is required.
 
-## Documentation (two modes)
+## Documentation (four skills, decoupled from sprint close)
 
-- **Install Documentation (one-time)**: establish the repo's canonical documentation set via `/install-documentation`.
-- **Ongoing Documentation (per sprint)**: when features or contracts change, load the `documentation-governance` skill and update the correct canonical docs before marking sprint stage `done`.
+- **`/install-documentation`** (one-time) — establishes the repo's canonical documentation set under `docs/reference/`.
+- **`/doc-audit`** (on demand) — scans the codebase against existing canonical docs and produces a gap report.
+- **`/doc-sprint-sync`** (manual, post-sprint) — refreshes canonical docs to reflect what a sprint built. Not invoked by `/review-sprint`.
+- **`/doc-write`** (internal) — writing standards loaded by the other doc skills.
+- **`documentation-governance`** (reference) — high-level non-negotiables, pointers to the four skills above.
 
 ## Keep documentation minimal
 

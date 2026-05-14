@@ -27,6 +27,8 @@ Guardrail:
 
 - Implementation matches sprint acceptance criteria.
 - Required tests/build checks run.
-- Contract-impacting changes have approved plans and updated canonical docs.
+- Contract-impacting changes have approved plans.
 - Mini audit completed if canonical surfaces were touched.
 - Status docs updated (`PROJECT_STATUS.md` and `docs/sprints/CURRENT_STATUS.md` at minimum).
+
+Note: Canonical doc updates (`docs/reference/`) are **not** a sprint-close gate. Refresh them manually via `/doc-sprint-sync` post-close when worth doing.
