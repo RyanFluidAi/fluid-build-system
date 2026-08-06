@@ -119,14 +119,26 @@ FBS deliberately ships neither. Parallel work uses general-purpose sub-agents dr
 2. `INSTALLATION_CHECKLIST.md` — step-by-step install into a repo
 3. `SYSTEM_GUIDE.md` — deeper reference for extending FBS
 
+### Get the kit
+
+Clone it, then copy the template tree into the repo you want to set up. The trailing `/.` matters — it copies the hidden `.claude/` and `.gitignore` along with everything else.
+
+```bash
+git clone https://github.com/RyanFluidAi/fluid-build-system.git
+cp -r fluid-build-system/templates/project-root/. /path/to/your-repo/
+```
+
+Nothing in FBS depends on the clone afterwards, so you can delete it. To pull in later changes, re-clone and re-copy — the template is plain Markdown, so `git diff` shows you exactly what moved.
+
 ### Quick install (new repo)
 
-1. Copy everything under `templates/project-root/` into your repo root
+1. Copy the template tree in, as above
 2. Edit `CLAUDE.md` with your project name, tech stack, conventions
 3. Edit `PROJECT_STATUS.md` with current project state
 4. Edit `docs/sprints/CURRENT_STATUS.md` with active work (or "none yet")
-5. Run `/install-documentation` to create canonical docs from your codebase
-6. Run `/verify-install` to confirm everything is in place
+5. Delete `docs/roadmap/` if you won't keep a roadmap — the skills skip it when absent
+6. Run `/install-documentation` to create canonical docs from your codebase
+7. Run `/verify-install` to confirm everything is in place
 
 ### Adopting into an existing repo
 
@@ -138,6 +150,7 @@ FBS deliberately ships neither. Parallel work uses general-purpose sub-agents dr
 | **D** | `docs/reference/` via `/install-documentation` | Canonical contracts |
 | **E** | `docs/audits/` + templates | Drift control |
 | **F** | `docs/roadmap/`, `docs/solutions/`, `/compound` | Roadmap tracking and knowledge compounding |
+| **G** | Your own domain skills, agents, hooks, `settings.json` | Project-specific extensions |
 
 See `SYSTEM_GUIDE.md` for the phased rollout detail.
 
