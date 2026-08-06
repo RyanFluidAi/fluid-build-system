@@ -1,135 +1,130 @@
 ---
 name: new-sprint
-description: Create a sprint document that turns an approved direction into an agent-executable work plan. Use when ready to break down approved work into actionable tasks with parallel sub-agent support.
-argument-hint: "[topic] [optional: sprint-number] [optional: dates]"
+description: Create a sprint document that turns approved work into an agent-executable plan with parallel workstreams. Use when ready to break down work into tasks that sub-agents can execute concurrently.
+argument-hint: "[topic] [optional: plan number] [optional: dates]"
 ---
 
-# /new-sprint — Create a Sprint Document (Agent-Executable Work Plan)
+# /new-sprint — Create a sprint document
 
 ## Goal
 
-Create a sprint document that turns an approved direction (idea/plan) into an **agent-executable work plan**: clear scope, crisp acceptance criteria, staged execution, and a task list that maps to real files and checks. Tasks should be tagged by domain so parallel sub-agents can work on independent tracks simultaneously.
+Turn a decided direction into an **agent-executable work plan**: crisp acceptance criteria, a task list that maps to real files, and independent workstreams that parallel sub-agents can run concurrently.
 
 ## When to use
 
-- **If the sprint will change contracts** (schemas/API/DB/business rules): the sprint **must link to the plan(s)** in `docs/plans/` and should start in `stage: planning` until approval exists.
-- **If the sprint is implementation-only** (no contract changes): a plan is optional; the sprint can proceed once acceptance criteria and tasks are defined.
+- **Tier 3** (contract changes): the sprint executes exactly one approved plan from `docs/plans/`. Link it. If the plan isn't approved yet, still create the sprint but leave it in `stage: planning` and record the approval dependency.
+- **Tier 2** (no contract changes): no plan needed. Create the sprint directly once acceptance criteria are clear.
 
-## Ideal workflow
-
-```
-/new-idea   -> explore architecture (discussion only)
-/new-plan   -> formalize contract changes (approval required)
-/new-sprint -> create agent-readable execution plan (this skill)
-/start-sprint -> execute the sprint, track stage, keep status docs current
-```
+**One plan produces one sprint.** If you are about to create a second sprint from a plan that already has one, stop — the plan was too big and should be split into multiple plans instead.
 
 ## Inputs
 
 $ARGUMENTS
 
-Gather (or infer from `CURRENT_STATUS.md` + prior docs) the following:
+Gather, or infer from `docs/sprints/CURRENT_STATUS.md` and the source plan:
 
-- **Topic**: short sprint topic (3-8 words, kebab-case friendly)
-- **Sprint number**: next globally sequential number (see filename convention below)
-- **Dates**: start/end (YYYY-MM-DD)
-- **Goal**: one-sentence sprint goal
-- **Scope boundaries**: in-scope vs explicit non-goals
-- **Links**:
-  - related plan doc(s) in `docs/plans/` (required if contracts change)
-  - related audits in `docs/audits/active/` (if applicable)
+- **Topic** — 3-8 words, kebab-case friendly
+- **Dates** — start/end (YYYY-MM-DD)
+- **Goal** — one sentence
+- **Scope** — in-scope areas and explicit non-goals
+- **Source plan** — required for Tier 3
 
-If minimal input is provided, ask the user for the sprint name/topic, planned dates, and goal.
+If input is thin, ask for the topic, dates, and goal. Don't ask for anything you can read off the plan.
 
 ## Steps
 
-### Phase 0: Load context (read-only)
+### 1) Load context
 
-- Read:
-  - `docs/sprints/sprint-template.md` (required structure)
-  - `docs/sprints/CURRENT_STATUS.md` (active sprint + stage + priorities)
-  - `PROJECT_STATUS.md` (resume-fast snapshot; update after sprint creation)
-- If coming from an approved plan in `docs/plans/`, read it for scope and acceptance criteria.
-- Optionally review recent sprints in `docs/sprints/` for examples.
-- Identify whether contract changes are expected.
-  - If yes, ensure plan(s) exist in `docs/plans/` and link them in the sprint doc.
+Read:
+- `docs/sprints/sprint-template.md` — required structure
+- `docs/sprints/CURRENT_STATUS.md` — active sprint, stage, priorities
+- the source plan in `docs/plans/`, if Tier 3
 
-### Phase 1: Choose the sprint filename + frontmatter
+Note any other sprints still open. This never blocks sprint creation — see step 6.
 
-**Filename format**: `docs/sprints/SPRINT-NNN-YYYY-MM-DD-<topic>.md`
+### 2) Back-check: does this plan already have a sprint? (Tier 3 only)
 
-- **Determine the next sprint number**: scan `docs/sprints/` for existing `SPRINT-NNN-*.md` files and use the next sequential number (zero-padded to 3 digits). If no sprints exist, start at `SPRINT-001`.
-- `YYYY-MM-DD` = today's date (sprint creation date).
-- Keep `<topic>` short and descriptive (kebab-case).
+Before creating anything, verify the one-plan-one-sprint rule from both directions:
 
-**Frontmatter (required)**:
+- Grep `docs/sprints/` for any sprint whose frontmatter `plan:` points at this plan.
+- Read the source plan's **Implementation Record → Sprint** field.
 
-- `doc_type: sprint`
-- `number: NNN` (matches filename)
-- `status: active`
-- `stage: planning` (initial default)
-- `created: YYYY-MM-DD`
-- `last_updated: YYYY-MM-DD`
-- `dates: { start: YYYY-MM-DD, end: YYYY-MM-DD }`
-- `sprint_goal: <single clear sentence>`
+**If either shows an existing sprint**, stop and report:
 
-### Phase 2: Write the sprint content so an agent can execute it
+> `PLAN-NNN` already has a sprint: `SPRINT-MMM`. A plan produces exactly one sprint.
 
-Fill the template fully (no placeholders). The sprint doc must include:
+Then give the user the two real options and wait for an answer:
 
-- **Summary**
-  - Goal (one sentence)
-  - Stage (must match frontmatter `stage`)
-  - Scope (short, explicit list of areas)
-- **Acceptance criteria**
-  - 5-12 checkbox items, written as observable outcomes
-  - Use "verifiable" language (what must be true at the end)
-- **Contracts / governance**
-  - Answer "contract-impacting changes expected?"
-  - Link plan doc(s) (required when contracts change)
-  - If plan approval is pending: keep `stage: planning` and record the approval dependency in `CURRENT_STATUS.md` blockers/priorities.
-- **Work plan** (designed for parallel sub-agent execution)
-  - Create tasks that map to real repo locations and/or concrete deliverables.
-  - Format each task to be scannable:
-    - `[owner]` domain tag: `[DB]`, `[API]`, `[UI]`, `[Docs]`, `[Test]`, `[Config]`, etc.
-    - `[P0/P1/P2]` priority
-    - `[estimate]` (rough, but present)
-  - Organize tasks into logical phases (DB -> API -> UI -> tests -> docs -> verification).
-  - Group independent tasks by domain so parallel sub-agents can claim and execute non-overlapping tracks simultaneously.
-- **Test plan (required)**
-  - Automated: specific commands to run + what they cover
-  - Manual: step-by-step checklist for the primary user flows
-- **Documentation DoD + Audit plan**
-  - Include doc/audit tasks whenever behavior/contracts/canonical surfaces are touched.
-- **Review gate**: what must pass before sprint can close
-- **Notes**: empty section for runtime decisions
+1. **The plan was too big** — split it into a follow-on plan covering the remaining work, and create that plan's sprint instead. This is almost always the right move.
+2. **The existing sprint is abandoned** — mark it `status: abandoned`, clear the plan's Sprint field, and proceed.
 
-### Phase 3: Update status documents (required)
+Do not create a second sprint against the same plan without an explicit instruction. This is a conflict check, not a workflow gate — it fires only when something has genuinely gone wrong.
 
-After creating the sprint doc:
+Also verify the plan's `status:` is `approved`. If it is still `draft`, create the sprint but keep it in `stage: planning` and record the approval dependency as a blocker.
 
-- Update `docs/sprints/CURRENT_STATUS.md`
-  - `active_sprint`: path to the new sprint doc
-  - `stage`: `planning` (initially)
-  - Add/adjust priorities to reflect the new sprint
-  - Add blockers if the sprint is waiting on plan approval or external dependencies
-- Update `PROJECT_STATUS.md`
-  - `last_updated`: today
-  - `active_work`: reflect the new sprint name/topic
+### 3) Assign the number and create the file
 
-### Phase 4: Present the result
+**Filename**: `docs/sprints/SPRINT-NNN-YYYY-MM-DD-<topic>.md`
 
-At the end, output:
+- Scan `docs/sprints/` for existing `SPRINT-NNN-*.md` and take the next sequential number, zero-padded to 3 digits. First sprint is `SPRINT-001`.
+- `YYYY-MM-DD` is today (creation date), not the start date.
+- Set `number: NNN` in frontmatter to match the filename.
 
-1. The created sprint file path
-2. The sprint goal + dates
-3. Whether contract changes are expected and which plan(s) are linked
-4. The initial stage (`planning`) and what must happen to move to `in_progress`
-5. Next step: use `/start-sprint` to begin implementation
+Frontmatter: `doc_type: sprint`, `number`, `status: active`, `stage: planning`, `created`, `last_updated`, `dates.start`, `dates.end`, `sprint_goal`, `plan:` (the source plan, or empty for Tier 2), and `roadmap_phase:`.
 
-## Important notes
+For `roadmap_phase:`: if `docs/roadmap/ROADMAP.md` exists, read it and set the phase this sprint advances. Bug-fix and maintenance sprints often advance none — set `""` and move on. Skip this entirely if there is no roadmap.
 
-- This skill **creates the sprint plan**; it does not implement the sprint.
-- Keep **stage consistent** everywhere (frontmatter + summary + `CURRENT_STATUS.md`).
-- If contracts are expected to change, do not proceed to implementation until the plan approval gate is satisfied.
-- Work plan tasks tagged by domain (`[DB]`, `[API]`, etc.) enable parallel sub-agent execution during `/start-sprint`.
+### 4) Write the work plan
+
+Fill the template with no placeholders left behind.
+
+**Acceptance criteria** — 5-12 checkboxes, written as observable outcomes. "The `/orders` endpoint returns `settled_at` on every order" beats "settlement works."
+
+**Tasks** — each maps to a real repo location or a concrete deliverable, and carries three tags:
+- domain: `[DB]` `[API]` `[UI]` `[Test]` `[Config]` `[Docs]`
+- priority: `[P0]` `[P1]` `[P2]`
+- rough estimate
+
+**Parallel workstreams** — this is the part that makes the sprint fast. Group tasks into named tracks that touch **disjoint sets of files**, so each track can be handed to its own sub-agent running concurrently.
+
+For each track, record:
+- track name and the domain(s) it covers
+- the files or directories it owns — no two concurrent tracks may list the same file
+- what it depends on (another track, or nothing)
+- how a sub-agent knows it's done
+
+Then state the execution order: which tracks start together, and which wait on a dependency. A typical shape is a sequential spine with parallel branches — schema lands first, then API and UI tracks run concurrently against it, then integration tests join them.
+
+If the work genuinely can't be split — a single tightly-coupled change — say so explicitly in the section and give one track. Don't invent artificial parallelism; overlapping file ownership causes more rework than it saves.
+
+**Test plan** — automated commands to run and what each covers, plus a manual checklist for the primary flows.
+
+**Review gate** — what must be true before `/review-sprint` can close it.
+
+Keep the sprint doc proportional to the work. A four-task sprint doesn't need a six-track workstream diagram.
+
+### 5) Update status docs and close the link
+
+- `docs/sprints/CURRENT_STATUS.md`: set `active_sprint` to the new path, `stage: planning`, adjust priorities, and add a blocker if waiting on plan approval.
+- `PROJECT_STATUS.md`: update `last_updated` and `active_work`.
+- **`docs/roadmap/ROADMAP.md`** (if it exists and a phase is set): add this sprint to that phase's **Related sprints** list. If the phase status is `not started`, move it to `in progress`.
+- **`PROJECT_STATUS.md`**: set `roadmap_phase:` to the sprint's phase.
+- **The source plan** (Tier 3): write `SPRINT-NNN` into its **Implementation Record → Sprint** field. This closes the bidirectional link — the sprint's `plan:` frontmatter points up, the plan's Sprint field points down — and is what makes the back-check in step 2 work for the next person.
+
+### 6) Present the result
+
+Report, in this order:
+
+1. **`SPRINT-NNN` created at `docs/sprints/SPRINT-NNN-YYYY-MM-DD-<topic>.md`** — lead with the assigned number and full path.
+2. Sprint goal and dates.
+3. Source plan, if any, and whether its approval is still pending.
+4. The parallel workstreams: track names, what each owns, and how many can run concurrently.
+5. **Other open sprints**, if any — name them and their stages, as a one-line warning. Ideally they'd be in `verification` or `done` first, but this does not block anything.
+6. Next step: `/start-sprint`.
+
+## Notes
+
+- This skill creates the work plan; it does not implement it.
+- Keep `stage` consistent between frontmatter, the Summary section, and `CURRENT_STATUS.md`.
+- For Tier 3, don't begin implementation until plan approval exists.
+- Canonical documentation is not a sprint-close gate. Include doc tasks only if the sprint's own deliverable is documentation.

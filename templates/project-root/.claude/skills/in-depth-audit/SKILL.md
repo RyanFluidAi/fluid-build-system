@@ -2,8 +2,6 @@
 name: in-depth-audit
 description: Create or update an in-depth audit for comprehensive subsystem verification. Use monthly, at major milestones, or when drift is suspected.
 argument-hint: "[scope] [target date range or sprint context]"
-context: fork
-allowed-tools: Read, Glob, Grep, Bash
 ---
 
 # /in-depth-audit — Comprehensive Subsystem Audit

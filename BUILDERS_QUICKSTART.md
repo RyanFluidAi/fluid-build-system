@@ -2,23 +2,21 @@
 doc_type: fbs_builders_quickstart
 status: active
 created: 2026-01-25
-updated: 2026-05-13
+updated: 2026-08-06
 ---
 
 # FBS for Builders (Non-Coders)
 
 FBS (Fluid Build System) makes it possible to build confidently with AI agents by keeping the project organized and verifiable.
 
-## The 5 things (simple language)
+## The 4 things (simple language)
 
 - **Rules**: permanent guardrails the AI must follow
   Location: `CLAUDE.md` + `.claude/rules/`
 - **Playbooks**: small "how-to" guides the AI loads only when needed
   Location: `.claude/skills/`
-- **Plans**: approval documents for contract changes (schema/API/DB/business rules)
-  Location: `docs/plans/`
-- **Sprints**: what we're building now
-  Location: `docs/sprints/`
+- **Documents**: ideas, plans, and sprints — what we're thinking about, what we've decided, and what we're building
+  Location: `docs/ideas/`, `docs/plans/`, `docs/sprints/`
 - **Checks**: audits that confirm we didn't ship undocumented or drifting behavior
   Location: `docs/audits/`
 
@@ -28,52 +26,62 @@ FBS (Fluid Build System) makes it possible to build confidently with AI agents b
 - `docs/sprints/CURRENT_STATUS.md` — what's happening now
 - `docs/sprints/<active sprint>.md` — the plan you're executing
 
+## Pick a tier — this is the important part
+
+Not every change needs the full process. Pick the smallest one that fits:
+
+| Tier | What it looks like | What you do |
+|------|-------------------|-------------|
+| **1 — Small fix** | Fixing a typo, tweaking a button, one or two files | Just ask for it. No paperwork. |
+| **2 — Sprint** | A real feature, but it doesn't change how data is shaped or how the API answers | `/new-sprint` → `/start-sprint` → `/review-sprint` |
+| **3 — Plan + sprint** | It changes the database, the API, an integration, or a business rule | `/new-idea` → `/new-plan` → **you approve** → `/new-sprint` → `/start-sprint` → `/review-sprint` |
+
+The **only** thing FBS will genuinely stop and wait for is Tier 3 approval. Everything else is a suggestion you can wave through.
+
+## How the three documents differ
+
+This is the part that trips people up:
+
+- **Idea** — "here are three ways we could do this, and here's the one we're picking." Alternatives live here.
+- **Plan** — "here is exactly what we are building." One direction, stated as fact. **No alternatives, no maybes.** One plan makes one sprint — if it's too big for one sprint, it becomes two plans.
+- **Sprint** — the to-do list, split into tracks that several AI agents can work on at the same time.
+
+Every idea, plan, and sprint gets a number (`IDEA-004`, `PLAN-002`, `SPRINT-007`). The AI tells you the number it assigned at the end of every run, so you always know what to refer back to.
+
 ## The skills you'll use most (type `/` in Claude Code)
 
+To pick up where you left off, just read `PROJECT_STATUS.md` — there's no session skill to run.
+
+- `/new-idea` — explores a new feature and lands on one approach
+- `/new-plan` — writes the decision down for your approval (Tier 3 only)
+- `/new-sprint` — creates the to-do list with parallel tracks
+- `/start-sprint` — builds it
+- `/review-sprint` — runs the tests and closes the sprint
+- `/sync` — syncs your local repo with remote
 - `/verify-install` — confirms FBS is installed correctly
-- `/start-session` — reviews project status at the start of a session
-- `/new-idea` — explores a new feature or concept
-- `/review-idea-doc` — validates an idea doc before progressing to a plan
-- `/new-plan` — creates a plan (approval gate for contract changes)
-- `/check-plan` — deep review of plan feasibility against the codebase
-- `/new-sprint` — creates a sprint plan (self-validates; parallel sub-agent task tags)
-- `/start-sprint` — begins executing the sprint (parallel sub-agents by domain)
-- `/check-sprint` — deep code review after implementation, before verification
-- `/review-sprint` — verification gates + close-out (`--deep` for parallel reviewers)
-- `/sync` — syncs your local repo with remote (fetch, pull, prune)
-- `/mini-audit` — creates a quick check document after non-trivial work
-- `/doc-audit` — gap report comparing the codebase to canonical docs
-- `/doc-sprint-sync` — (optional, post-sprint) refresh canonical docs to match what was built
-- `/close-session` — end-of-session checklist (commits, status updates, session log)
 
-## The governance pipeline (how features progress)
+Worth knowing, used less often:
 
-```
-idea → plan → check → approval → sprint → build → check → close
-```
+- `/review-idea-doc` — checks an idea actually decided something
+- `/check-plan` — pressure-tests a plan before you approve it
+- `/check-sprint` — deep code review before closing a sprint
+- `/mini-audit` — quick drift check after significant work
+- `/doc-audit` — finds gaps between the code and the documentation
+- `/doc-sprint-sync` — refreshes documentation after a sprint
 
-1. Explore with `/new-idea`
-2. Validate idea with `/review-idea-doc`
-3. Formalize with `/new-plan` (if schema/API/DB changes needed)
-4. Check feasibility with `/check-plan`
-5. Get approval
-6. Create sprint with `/new-sprint` (self-validates)
-7. Execute with `/start-sprint`
-8. Code review with `/check-sprint`
-9. Close out with `/review-sprint`
-10. (Optional) Refresh canonical docs with `/doc-sprint-sync`
+## Can I have two sprints going at once?
+
+Yes. FBS prefers that you finish one before starting the next, and it will say so — but it won't stop you. The warning is advice, not a lock.
 
 ## Install Documentation (one-time)
 
-When FBS is first installed into a repo, run `/install-documentation` once. This launches sub-agents that explore the codebase and create comprehensive canonical docs under `docs/reference/` based on what actually exists in the repo.
+When FBS is first installed into a repo, run `/install-documentation` once. This launches sub-agents that explore the codebase and write reference documentation under `docs/reference/` based on what actually exists.
 
-Run `/verify-install` afterward to confirm all canonical docs are populated (not just placeholder templates).
+Then run `/verify-install` to confirm everything landed and no documents are still blank templates.
 
-## Keeping canonical docs current
+## Keeping documentation current
 
-Canonical doc updates are **decoupled from sprint close** — sprints are not blocked on documentation. Two skills handle ongoing maintenance:
+Documentation updates never block a sprint from closing. Two skills handle it when you decide it's worth doing:
 
-- `/doc-audit` — scans the codebase against existing canonical docs and produces a prioritised gap report
-- `/doc-sprint-sync` — manual, owner-triggered refresh that updates canonical docs to reflect what a sprint just built
-
-Run them when worth doing, not as a sprint-close gate.
+- `/doc-audit` — compares the code against the docs and reports the gaps
+- `/doc-sprint-sync` — updates the docs to match what a sprint just built

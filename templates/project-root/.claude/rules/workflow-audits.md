@@ -10,7 +10,7 @@ Applies when working on audits, drift checks, or comparing against canonical doc
 
 - Check `docs/audits/active/` and summarize unresolved **P0/P1** issues relevant to the task.
 - Load the relevant audit skill (`mini-audit` or `in-depth-audit`) and any domain skill(s) being audited.
-- If the audit touches documentation completeness, load the `documentation-governance` skill.
+- If the audit touches documentation completeness, run `/doc-audit` instead — it is purpose-built for that.
 - Decide audit type:
   - **Mini audit**: targeted check after changes
   - **In-depth audit**: broad check for subsystem/platform

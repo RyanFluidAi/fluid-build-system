@@ -1,6 +1,6 @@
 ---
 name: review-sprint
-description: Verify a sprint and close it (tests + skills gates). The only workflow that should move a sprint to stage done.
+description: Verify a sprint and close it. Runs the sprint's test plan, captures learnings, and updates status docs. The only workflow that should move a sprint to stage done.
 argument-hint: "[optional: sprint doc path under docs/sprints/]"
 ---
 
@@ -21,8 +21,7 @@ $ARGUMENTS
 If no sprint path is provided:
 - Read `docs/sprints/CURRENT_STATUS.md` and use `active_sprint`.
 
-Optional flag:
-- `--deep` enables heavyweight review using parallel reviewer subagents.
+Deep code review is not part of this skill. Run `/check-sprint` before this if the diff warrants it.
 
 ## What this skill owns (no crossover)
 
@@ -40,15 +39,6 @@ Documentation sync is **not** owned by this skill. Run `/doc-sprint-sync` manual
   - `docs/sprints/CURRENT_STATUS.md`
   - `PROJECT_STATUS.md`
   - `docs/audits/active/` (only if sprint touched canonical surfaces)
-
-If `--deep` is enabled:
-- Run parallel reviewer subagents and synthesize findings before proceeding:
-  - `architecture-reviewer`
-  - `security-reviewer`
-  - `performance-reviewer`
-  - `data-integrity-reviewer`
-  - `test-quality-reviewer`
-  - `docs-governance-reviewer`
 
 ### 1) Verification (required)
 
@@ -71,86 +61,84 @@ Canonical documentation sync is **not** part of this workflow. Do not spawn doc 
 - If the sprint changed contracts/behavior that require canonical doc updates, surface this in the output as a reminder (e.g., "Owner may want to run `/doc-sprint-sync` — schema/API changed").
 - If a contract-impacting change occurred and the plan approval gate is still pending, note that as a blocker — but doc sync itself is still the owner's call, run manually.
 
-### 3) Audit system sync (only when canonical surfaces are touched)
+### 3) Audit reminder (not gating)
 
-- Ensure a mini audit exists/updated under `docs/audits/active/` when the sprint touched canonical surfaces.
-- Ensure the audit includes:
-  - canonical refs reviewed
-  - issues (if any)
-  - testing performed
+If the sprint touched canonical surfaces (schema, API, DB, integrations), surface a one-line reminder that `/mini-audit` is worth running. Do not block sprint close on it, and do not write the audit from here.
 
-### 4) Learnings capture (required)
+### 4) Capture what's worth keeping (only if there is something)
 
-Review the sprint for reusable knowledge before it's lost.
+Skip this section outright when the sprint produced nothing reusable. Most sprints do. Recording "no learnings" is not a deliverable — say nothing.
 
-- **Architectural decisions**: record mid-sprint design choices (e.g., "chose X over Y because Z") in the sprint doc Notes section.
-- **Patterns discovered**: note new patterns that future work should follow. Examples: a standard integration flow, a data-channel relay pattern, a configuration-over-code approach.
-- **Pitfalls encountered**: document anything harder than expected or that caused rework, even if it didn't require a `/compound` entry.
+Write into the sprint doc Notes only when one of these actually happened:
 
-Keep it brief (3-7 bullets max). The goal is to make the *next* sprint in this area faster.
+- **A decision worth remembering** — a mid-sprint design choice a future reader would otherwise have to reverse-engineer.
+- **A pattern worth repeating** — something the next sprint in this area should follow.
+- **A pitfall worth warning about** — something that caused real rework.
 
-### 5) Skills decision (required)
+3-7 bullets, hard cap. If a solved problem is non-obvious and likely to recur, that's a `/compound` entry instead, not a Notes bullet.
 
-Decide whether a new skill should be created/updated.
+### 5) Skills decision (only if the sprint asked, or the work demands it)
 
-- **Check the sprint doc first**: look for any explicit skill-creation tasks in the sprint. These are requirements, not suggestions.
-- If the sprint doc requests a skill: create it.
-- If the work introduced a new reusable procedure, repeated pitfall, or standardized pattern worth codifying (even if the sprint doc didn't ask): create or update the relevant `.claude/skills/<skill>/SKILL.md`.
-- If neither applies: explicitly record "no skill change" in the sprint Notes.
+- **If the sprint doc contains an explicit skill-creation task**: that's a requirement. Create it.
+- **If the work established a repeatable procedure** someone will otherwise re-derive: create or update the relevant `.claude/skills/<skill>/SKILL.md`.
+- **Otherwise**: say nothing. Do not record "no skill change" anywhere.
 
-### 6) Plan/idea review (required when sprint originated from a plan or idea)
+### 6) Plan reconciliation (Tier 3 only)
 
-If the sprint was born from an approved plan (`docs/plans/`) or idea doc (`docs/ideas/`):
+If the sprint executed a plan:
 
-- Compare the outcome against the original vision. Did we build what we planned?
-- Note any scope changes, deferred items, or new ideas that emerged.
-- Update the source plan/idea doc status if appropriate (e.g., mark phases as complete, add "emerged during Sprint X" notes).
+- Compare what shipped against the plan's Decision and Specification. Flag scope gaps, scope creep, and deviations.
+- Set the plan's `status: implemented` and fill its **Implementation Record**: sprint number, date, and any deviations. An unfilled Implementation Record breaks the back-check `/new-sprint` relies on.
 
-### 7) Optional: Solutions compounding (/compound)
+### 7) Roadmap advancement (only if a roadmap exists)
 
-If a non-obvious issue was solved (debugging required, likely to recur), run `/compound` after review to write a solution entry under `docs/solutions/`.
+If `docs/roadmap/ROADMAP.md` exists and the sprint has a `roadmap_phase:`:
 
-### 8) Close-out updates (required)
+- Tick the phase deliverables this sprint completed.
+- If every deliverable in the phase is now ticked, set the phase to `completed` and move the next phase to `in progress`.
+- Update `roadmap_phase:` in `PROJECT_STATUS.md`.
 
-- In the sprint doc:
-  - ensure acceptance criteria and verification checkboxes are accurate
-  - set `stage: done` only when all gates pass
-- In `docs/sprints/CURRENT_STATUS.md`:
-  - update stage and priorities/blockers
-- In `PROJECT_STATUS.md`:
-  - update `last_updated` and reflect current active work if it changed
+Skip silently if there is no roadmap or no phase set.
+
+### 8) Close-out (required)
+
+- In the sprint doc: verify acceptance criteria and checkboxes are accurate, then set `stage: done` — only when verification passed.
+- In `docs/sprints/CURRENT_STATUS.md`: update stage, priorities, and blockers.
+- In `PROJECT_STATUS.md`: update `last_updated`, `active_work`, `active_sprint`, and the P0/P1 counts if they changed.
 
 ## Output
 
 At the end, provide:
 
-1. Sprint path reviewed
+1. Sprint number and path reviewed
 2. Stage before -> after
-3. Verification summary (what ran, what passed/failed)
-4. Learnings captured (key decisions, patterns, pitfalls - 3-7 bullets)
-5. Skills outcome (created/updated/no change - with file links if applicable)
-6. Plan/idea alignment (matched / scope changed / deferred items noted)
-7. Audit outcome (mini audit created/updated, or N/A if no canonical surfaces touched)
-8. Docs reminder (optional — one line flagging whether `/doc-sprint-sync` is worth running, based on what changed)
+3. Verification summary — what ran, what passed, what failed
+4. Plan reconciliation (Tier 3) — matched / scope changed / deviations, and confirmation the Implementation Record is filled
+5. Roadmap — phase advanced, or omitted
+
+Include only if they apply — omit the line entirely otherwise, don't write "N/A":
+
+6. Learnings captured
+7. Skill created or updated
+8. Reminders — `/mini-audit` if canonical surfaces were touched, `/doc-sprint-sync` if contracts changed, `/compound` if a non-obvious problem was solved
 
 ---
 
 ## Position in the workflow
 
-`/review-sprint` is the **final step** in the sprint lifecycle. It should only be run after implementation is complete and `/check-sprint` issues have been resolved.
+`/review-sprint` is the **final step** in the sprint lifecycle. Run it once implementation is complete — and, if `/check-sprint` was run, once its P0/P1 issues have been resolved.
 
 The full sprint workflow is:
 
 ```
-🚀 /new-sprint   → create sprint execution plan + self-validate
-   🔧 resolve ⚠ items if any
-🔨 /start-sprint → execute implementation
-🔍 /check-sprint → deep code review of completed work
-   🔧 fix issues found
-✅ /review-sprint → verification gates + close sprint (this skill)
+/new-sprint    → create sprint execution plan with parallel workstreams
+/start-sprint  → execute implementation (concurrent sub-agents per track)
+/check-sprint  → deep code review of completed work (optional)
+   fix issues found
+/review-sprint → verification gates + close sprint (this skill)
 ```
 
 After a sprint is closed, consider:
-- **`/doc-sprint-sync`** — if the sprint changed contracts/behavior worth documenting in `docs/reference/`
-- **`/compound`** — if a non-obvious problem was solved during the sprint, capture it as a solution entry
-- **`/close-session`** — if ending the session, run the end-of-session checklist
+- **`/doc-sprint-sync`** — if the sprint changed contracts or behavior worth documenting in `docs/reference/`
+- **`/mini-audit`** — if canonical surfaces were touched
+- **`/compound`** — if a non-obvious problem was solved, capture it as a solution entry

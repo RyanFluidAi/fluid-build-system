@@ -16,7 +16,7 @@ This is not canonical documentation. It is a "solved problem" record with preven
 
 $ARGUMENTS
 
-If no context is provided, infer from the most recent sprint work and the latest session log under `docs/sessions/`.
+If no context is provided, infer from the active sprint's Notes section and recent commits.
 
 ## Rules (anti-staleness)
 

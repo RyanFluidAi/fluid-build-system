@@ -52,15 +52,20 @@ Propose a high-level design covering:
 
 ### Phase 4: Trade-offs discussion
 
-- Explore different approaches with pros/cons
-- Consider phased implementation
+**This is the only stage in FBS where alternatives belong.** Explore them properly here, because the plan that follows will state a single direction and carry none of this forward.
+
+- Lay out the genuine approaches with honest pros and cons
 - Identify dependencies and prerequisites
+- Note what would make you change your mind
 
-### Phase 5: Decision summary
+### Phase 5: Decision
 
-- Summarize the agreed-upon architecture
-- List key implementation steps/phases
-- Note any dependencies or prerequisites
+Drive the discussion to a **single chosen direction**, and get the user to confirm it. An idea doc that ends with two live options isn't finished — the plan can't be written from it.
+
+- State the chosen architecture
+- Record why the alternatives were rejected (this stays in the idea doc)
+- Estimate whether the work fits **one sprint**. If it clearly doesn't, note where it should be split — each split becomes its own plan and its own sprint.
+- List remaining open questions explicitly
 
 ### Phase 6: Create the idea artifact (required)
 
@@ -75,15 +80,19 @@ Propose a high-level design covering:
 
 ## Output
 
-1. **Architecture summary** — clear decisions on database, API, UI, integrations
-2. **Implementation phases** — logical breakdown of work
-3. **Idea file created** — path to the new `docs/ideas/IDEA-NNN-...` document
-4. **Next step** — suggest using `/new-plan` (if contract changes) or `/new-sprint` (if implementation-only)
+Report, in this order:
+
+1. **`IDEA-NNN` created at `docs/ideas/IDEA-NNN-YYYY-MM-DD-<topic>.md`** — lead with the assigned number and full path.
+2. **Chosen direction** — the single architecture decided on, and the rejected alternatives in one line each.
+3. **Sprint sizing** — fits one sprint, or where it should be split into multiple plans.
+4. **Open questions** — anything still unresolved.
+5. **Next step** — `/new-plan` if contracts change (Tier 3), or `/new-sprint` directly if not (Tier 2).
 
 ## Important notes
 
-- **NO runtime code changes** during this skill — discussion + documentation artifact only
+- **NO runtime code changes** during this skill — discussion and a documentation artifact only
 - Reference existing patterns with code citations
-- Be thorough but concise — aim for clarity over exhaustiveness
-- If the idea requires changes to core contracts (auth, billing, org model), flag that early
+- Be thorough but concise — clarity over exhaustiveness
+- If the idea touches core contracts (auth, billing, org model), flag that early
 - Keep the user engaged — this is a collaborative discussion, not a lecture
+- Alternatives explored here stay here. `/new-plan` will carry forward only the decision.

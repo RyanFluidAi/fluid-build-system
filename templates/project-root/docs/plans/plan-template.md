@@ -5,74 +5,97 @@ status: draft
 created: YYYY-MM-DD
 author: ""
 approver: ""
+related_idea: ""
+depends_on_plan: ""
+sprint: ""
 related_issues: []
 ---
 
 # PLAN-NNN: <Title>
 
+<!--
+A plan states one decision as fact. It produces exactly one sprint.
+No "Alternatives Considered" section — alternatives belong in the idea doc.
+No hedging: write "the table gains a column", not "we could add a column".
+-->
+
+## Decision
+
+<!-- One paragraph, indicative mood. What will be built. This is the heart of the plan. -->
+
 ## Problem Statement
 
 ### Current State
-<!-- What exists now (be specific, reference code/files) -->
+<!-- What exists now. Reference real files and line numbers. -->
 
 ### Desired State
-<!-- What should exist (concrete outcomes) -->
+<!-- Concrete outcomes once this ships. -->
 
 ### Why This Matters
-<!-- Impact if not addressed (user/business value) -->
+<!-- Impact if not addressed. User or business value. -->
 
-## Proposed Solution
+## Specification
 
-### Canonical Changes Required
+<!--
+The authoritative technical spec. Use schema + example + semantics for every
+operational structure. Follow this project's existing patterns — read the real
+schema and route files first.
+-->
 
-<!-- List affected docs in docs/reference/ or docs/canonical/ -->
-| Document | Change Type (Minor/Major/Patch) | Description |
-|----------|------|-------------|
+### Schema
+
+### Interface / Endpoints
+
+### Worked Example
+
+### Semantics
+
+## Canonical Changes Required
+
+| Document | Change Type (Patch/Minor/Major) | Description |
+|----------|--------------------------------|-------------|
 | | | |
-
-### Proposed Specification
-
-<!-- Detailed technical specification: schema definitions, API signatures, examples, semantics -->
 
 ## Implementation Impact
 
-### Code Changes Required
-<!-- Files to modify with descriptions -->
+### Files to Modify
+<!-- Real paths, with what changes in each. -->
 
 ### New Files
-<!-- New files with purposes -->
+<!-- Real paths, with purpose. -->
 
-### Test Changes
-<!-- Existing tests to update + new tests needed -->
+### Tests
+<!-- Existing tests to update + new tests required. -->
 
 ### Data / Migration Impact
-<!-- Migration required? Describe approach -->
+<!-- Migration required? Describe the approach. -->
 
 ## Migration Plan
 
-<!-- Required if breaking changes. Otherwise note "No breaking changes" -->
-
-## Alternatives Considered
-
-### Alternative 1: <Name>
-- **Description**:
-- **Pros**:
-- **Cons**:
-- **Why not chosen**:
-
-## Traceability
-
-- **Idea doc**:
-- **Canonical docs**:
-- **Implementation files**:
-- **Test files**:
-- **Related audits**:
+<!-- Required if breaking: numbered steps + rollback procedure. Otherwise: "No breaking changes." -->
 
 ## Risks
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|------------|
 | | | | |
+
+## Open Decisions
+
+<!--
+Only for questions the approver must resolve. Any entry here blocks approval.
+More than one means the plan isn't ready — return to /new-idea.
+Delete this section if empty.
+-->
+
+## Traceability
+
+- **Idea doc**:
+- **Depends on plan**:
+- **Canonical docs**:
+- **Implementation files** (anticipated):
+- **Test files** (anticipated):
+- **Related audits**:
 
 ## Approval
 
@@ -82,7 +105,7 @@ related_issues: []
 
 ## Implementation Record
 
+- **Sprint**: <!-- exactly one -->
 - **Implemented by**:
 - **Date**:
-- **Sprint**:
 - **Deviations from plan**:

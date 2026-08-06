@@ -3,7 +3,9 @@ name: check-plan
 description: Deep review of a plan document before approval. Reads the full plan, cross-references against codebase reality, and checks for gaps, risks, and feasibility. Run this before approving a plan.
 argument-hint: "[optional: plan doc path under docs/plans]"
 context: fork
+background: false
 allowed-tools: Read, Glob, Grep
+disallowed-tools: Edit, Write, NotebookEdit
 ---
 
 # /check-plan — Plan Document Review
@@ -18,8 +20,7 @@ This skill reads the plan like a senior engineer evaluating whether it will actu
 
 $ARGUMENTS
 
-If no plan path is provided:
-- Look for the most recent "Draft" plan in `docs/plans/`.
+This skill runs in a forked context and cannot see the conversation that invoked it. If no plan path is provided, review the most recent `status: draft` plan in `docs/plans/` and say which one you picked. Do not ask a follow-up question — there is no one to answer it.
 
 ## Steps
 
@@ -84,12 +85,17 @@ If the plan includes breaking API changes:
 - Flag any existing tests that would likely break from the proposed changes but aren't mentioned.
 - Check if the proposed new tests adequately cover the critical paths.
 
-### 6) Alternatives evaluation
+### 6) Plan discipline (hard checks)
 
-- Review each alternative listed in the plan.
-- Assess whether the pros/cons analysis is accurate.
-- Flag if a dismissed alternative might actually be better given what you've seen in the codebase.
-- Note if there are obvious alternatives that weren't considered.
+A plan must be authoritative, singular, and directive. Flag every violation as **P0** — these make a plan unbuildable regardless of how good the technical content is.
+
+- **Alternatives**: the plan must contain no "Alternatives Considered" section and no comparison of competing approaches. Alternatives belong in the idea doc. If the plan is still weighing options, it is not a plan.
+- **Hedging**: scan the whole document, excluding the Risks table and Open Decisions, for "maybe", "possibly", "we could", "one approach", "alternatively", "TBD", "either/or", "depending on", "if we decide", "some kind of", "or similar". Quote each instance with its location. Any hit is a P0.
+- **Sprint sizing**: the plan must be executable as **one** sprint. Flag phased structures ("Phase 1 / Phase 2 / Phase 3") that imply separate sprints, and flag an implementation impact too large for a single sprint. The remedy is splitting into multiple plans, each producing one sprint — say so explicitly.
+- **Open Decisions**: any entry in this section blocks approval. More than one means the plan should return to `/new-idea`.
+- **Non-indicative decision**: the Decision section must state what will be built as fact, in one paragraph. Flag it if it reads as a proposal rather than a decision.
+
+Separately — and reported as **P2, not a blocker** — if the codebase strongly suggests the chosen direction is wrong, say so once, plainly, with evidence. Do not reopen a settled decision over style preference.
 
 ### 7) Risk completeness check
 
@@ -123,12 +129,20 @@ Produce a structured report in the chat:
 ### Specification Quality
 | Section | Status | Notes |
 |---|---|---|
+| Decision | Authoritative / Reads as a proposal | ... |
 | Problem Statement | Accurate / Inaccurate | ... |
-| Proposed Solution | Complete / Gaps found | ... |
+| Specification | Complete / Gaps found | ... |
 | Implementation Impact | Complete / Incomplete | ... |
 | Migration Plan | Sound / Risky / Missing | ... |
-| Alternatives | Thorough / Superficial | ... |
 | Risks | Complete / Gaps found | ... |
+
+### Plan Discipline
+| Check | Result |
+|---|---|
+| No alternatives section | Pass / Fail |
+| No hedging language | Pass / Fail (list instances) |
+| Fits one sprint | Pass / Fail (recommend split into N plans) |
+| Open Decisions | None / N blocking |
 
 ### Issues Found
 

@@ -2,7 +2,7 @@
 doc_type: fluid_build_system_guide
 status: active
 created: 2026-01-25
-updated: 2026-05-13
+updated: 2026-08-06
 ---
 
 # FBS — Fluid Build System — Setup Guide (Portable)
@@ -16,9 +16,7 @@ During installation, check the current Claude Code docs for any changes since th
 - [CLAUDE.md and Memory](https://code.claude.com/docs/en/memory)
 - [Skills](https://code.claude.com/docs/en/skills)
 - [Subagents](https://code.claude.com/docs/en/sub-agents)
-- [Hooks](https://code.claude.com/docs/en/hooks)
 - [Settings](https://code.claude.com/docs/en/settings)
-- [MCP Servers](https://code.claude.com/docs/en/mcp)
 
 ---
 
@@ -30,13 +28,14 @@ FBS is a **documentation + governance architecture** for AI-assisted development
 - **AI should not load everything**. It should load a small set of **high-signal documents** and the **relevant skills**.
 - **Work should be tracked** (current status + sprint doc), and drift should be caught early via **audits + fast checks**.
 
-FBS is built from five pillars:
+FBS is built from four pillars:
 
-1. **Rules** (`.claude/rules/`): short workflow guardrails.
-2. **Skills** (`.claude/skills/`): progressive-disclosure guidance by domain.
-3. **Plans** (`docs/plans/`): approval workflow for contract-impacting changes.
-4. **Sprints** (`docs/sprints/`): spec-driven execution and stage tracking.
-5. **Audits** (`docs/audits/`): drift detection + remediation tracking.
+1. **Rules** (`CLAUDE.md` + `.claude/rules/`): always-on guardrails plus two path-scoped workflow rules.
+2. **Skills** (`.claude/skills/`): progressive-disclosure guidance, loaded on demand.
+3. **Documents** (`docs/ideas/`, `docs/plans/`, `docs/sprints/`): explore → decide → execute, with strictly separated jobs.
+4. **Audits** (`docs/audits/`): drift detection + remediation tracking.
+
+FBS ships **no hooks, no agent definitions, and no `settings.json`**. It does not intercept tool calls or impose a permissions model. Everything it does is documentation and skills, which means it can be adopted incrementally and removed cleanly.
 
 ---
 
@@ -46,44 +45,34 @@ FBS is built from five pillars:
 
 **In order**:
 
-- `CLAUDE.md`: project instructions + governance rules (always loaded).
+- `CLAUDE.md`: project instructions, tier routing, and the one governance gate (always loaded).
 - `PROJECT_STATUS.md`: single-page resume context snapshot.
 - `docs/sprints/CURRENT_STATUS.md`: what's happening now (active sprint, blockers, stage).
-- `.claude/skills/`: load only relevant skills.
 - `docs/audits/active/`: unresolved drift findings.
+- `.claude/skills/`: load only relevant skills.
 
 ### 2.2 The execution loop (how features get built)
 
-**Governance pipeline** (8 steps + optional doc sync):
+FBS has **three tiers**. The first decision on any task is which tier it is, and the agent must say which one it picked.
 
-```
- Step  Skill                Purpose
- ───── ──────────────────── ──────────────────────────────────────────
-  1    /new-idea             explore architecture and design
-  2    /review-idea-doc      validate idea completeness
-  3    /new-plan             formalize contract changes
-  4    /check-plan           deep feasibility review against codebase
-  5    ⏸ approval            wait for explicit user approval
-  6    /new-sprint           create agent-executable work plan (self-validates)
-  7    /start-sprint         execute the work plan (parallel sub-agents)
-  8    /check-sprint         deep code review after implementation
-  9    /review-sprint        verification + close-out → stage: done
- 10    /doc-sprint-sync      (optional, manual) refresh canonical docs
-```
+| Tier | Trigger | Path |
+|------|---------|------|
+| **1 — Small fix** | 1-3 files, no contract change | Implement directly. No documents. |
+| **2 — Sprint** | Multi-file feature or refactor, no contract change | `/new-sprint` → `/start-sprint` → `/review-sprint` |
+| **3 — Plan + sprint** | Schema, API shape, integration payload, or documented business rule changes | `/new-idea` → `/new-plan` → ⏸ approval → `/new-sprint` → `/start-sprint` → `/review-sprint` |
 
-Every **create** step has a corresponding **review/check** step:
+Optional checks, run by judgement rather than by rule:
 
-| Create | Review |
-|--------|--------|
-| `/new-idea` | `/review-idea-doc` |
-| `/new-plan` | `/check-plan` |
-| `/new-sprint` | (self-validates) |
-| `/start-sprint` (build) | `/check-sprint` |
-| — | `/review-sprint` (final gate) |
-
-**Small fixes** skip the pipeline — follow `.claude/rules/workflow-small-fixes.md`.
+| Check | Runs after | Purpose |
+|-------|-----------|---------|
+| `/review-idea-doc` | `/new-idea` | Confirms the idea settled on a single direction |
+| `/check-plan` | `/new-plan` | Feasibility against the codebase + plan-discipline checks |
+| `/check-sprint` | `/start-sprint` | Deep code review of the diff; worth it above ~15 changed files |
+| `/doc-sprint-sync` | `/review-sprint` | Refresh canonical docs |
 
 ### 2.3 Governance gates
+
+There is exactly **one blocking gate**: a contract-impacting change requires an approved plan before implementation. Everything else in FBS is a default that can be overridden by saying so.
 
 **Plans** are required before implementing:
 - API contract changes (field names/shapes, error envelopes, endpoint semantics)
@@ -107,7 +96,7 @@ Every **create** step has a corresponding **review/check** step:
 3. **Plans and decisions**: `docs/plans/`, `docs/ideas/`
 4. **Drift tracking**: `docs/audits/`
 5. **Progressive-disclosure guidance**: `.claude/skills/`
-6. **Session logs**: `docs/sessions/`
+6. **Roadmap**: `docs/roadmap/ROADMAP.md`
 7. **Solutions library**: `docs/solutions/`
 
 ### 3.2 Document naming conventions
@@ -154,17 +143,14 @@ A one-time process establishing the repo's canonical documentation system (via `
 
 ### 4.2 Canonical doc set
 
-Governance docs (rules for all other canonical docs):
-- `docs/reference/DOCUMENTATION_STANDARDS_CANONICAL.md`
-- `docs/reference/DOCUMENTATION_HIERARCHY_CANONICAL.md`
-- `docs/reference/DOCUMENT_MAINTENANCE_GUIDE_CANONICAL.md`
-- `docs/reference/DOCUMENT_TEMPLATE_CANONICAL.md`
+`docs/reference/` holds facts about **your system** and nothing else. Four docs, all populated by sub-agents from the actual codebase:
 
-Content docs (populated by sub-agents from the actual codebase):
 1. `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md`
 2. `docs/reference/SCHEMA_AND_CONTRACTS_CANONICAL.md`
 3. `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`
 4. `docs/reference/DOCUMENTATION_INVENTORY.md`
+
+Documentation *standards* — structure, tone, precedence, versioning, supersession, gap handling — live in the `doc-write` skill, loaded on demand. Earlier FBS versions shipped them as four canonical docs totalling ~1,300 lines of documentation-about-documentation into every project before it had written a line of its own. They were removed and folded into `doc-write`.
 
 ### 4.3 "No invention" rule
 
@@ -188,17 +174,18 @@ Canonical doc maintenance is a **separate workflow** from sprint execution. Spri
 | `/doc-audit` | On demand | Scans the codebase against existing canonical docs; produces a prioritised gap report |
 | `/doc-sprint-sync` | After a sprint | Manually invoked. Reads the sprint diff, updates affected canonical docs |
 | `/doc-write` | Auto-loaded | Writing standards (schema + example + semantics, tone, prohibited words). Not user-invocable. |
-| `documentation-governance` | Auto-loaded | High-level non-negotiables and pointers to the four skills above |
 
 ### 5.2 Sprint Definition of Done
 
-Before sprint stage moves to `done`:
+Required before sprint stage moves to `done`:
 - Implementation matches acceptance criteria
 - Required tests/build checks pass
 - Contract-impacting changes have approved plans
-- Mini audit completed if canonical surfaces were touched
+- Status docs updated
 
-Canonical-doc updates (`docs/reference/`) are **not** a DoD item. They are owner-triggered post-close.
+Recommended, surfaced as a reminder at close but **not** gating:
+- Mini audit, if canonical surfaces were touched
+- Canonical-doc refresh via `/doc-sprint-sync`, if contracts changed
 
 ### 5.3 Audit role
 
@@ -222,15 +209,23 @@ Subdirectory `CLAUDE.md` files are loaded dynamically when Claude works in that 
 
 ### 6.2 Rules
 
-Rules live in `.claude/rules/` as plain Markdown files. Unlike Cursor rules, Claude Code rules don't use `alwaysApply` or `globs` frontmatter — they are discovered as project context.
+Rules live in `.claude/rules/` as Markdown files, discovered recursively. A rule with **no** `paths:` frontmatter loads unconditionally at launch, with the same priority as `.claude/CLAUDE.md`. A rule **with** `paths:` loads only when Claude reads a file matching one of its globs.
 
-This kit includes four rules:
-- `foundation.md` — always-on context loading, progressive disclosure, non-negotiable governance
-- `workflow-small-fixes.md` — low-ceremony guardrails for small changes
-- `workflow-sprints.md` — spec-driven execution with stage tracking
-- `workflow-audits.md` — drift detection and remediation workflow
+```markdown
+---
+paths:
+  - "docs/sprints/**"
+---
+```
 
-Foundation rules are always in context (no `paths` restriction). Workflow rules are scoped to their respective doc paths.
+Because unconditional rules cost context in every session, FBS keeps only two rules, and both are path-scoped:
+
+- `workflow-sprints.md` (`docs/sprints/**`) — stage tracking, concurrent-sprint policy, definition of done
+- `workflow-audits.md` (`docs/audits/**`) — drift detection and remediation
+
+Everything that genuinely must always be in context — tier routing, the approval gate, numbering, progressive disclosure — lives in `CLAUDE.md` instead. Earlier versions of FBS shipped `foundation.md` and `workflow-small-fixes.md` as unconditional rules that largely duplicated `CLAUDE.md`; both were removed and folded in.
+
+Rules are context, not enforcement. Claude reads them and generally follows them; nothing guarantees compliance.
 
 ### 6.3 Skills
 
@@ -242,30 +237,35 @@ Skills are the primary extension mechanism. Each skill is a directory under `.cl
 
 | Field | Purpose |
 |-------|---------|
-| `name` | Skill identifier (matches the `/name` invocation) |
+| `name` | Display label in listings. For project skills the `/command` comes from the **directory name**, not this field — keep them identical anyway. |
 | `description` | What it does and when to use it (primary trigger mechanism) |
 | `argument-hint` | Autocomplete hint, e.g. `[sprint doc path]` |
-| `disable-model-invocation` | `true` = only user can invoke via `/name` |
+| `disable-model-invocation` | `true` = only the user can invoke via `/name` |
 | `user-invocable` | `false` = hidden from `/` menu, Claude auto-loads when relevant |
-| `context` | `fork` = runs in isolated subagent context |
+| `context` | `fork` = runs in an isolated subagent context with no conversation history |
+| `background` | Only with `context: fork`. Defaults to `true`. Set `false` to get the result in the invoking turn. |
 | `agent` | Which subagent type when `context: fork` |
-| `allowed-tools` | Auto-approve specific tools when this skill is active |
+| `allowed-tools` | **Pre-approves** tools for the invoking turn. Does **not** restrict anything. |
+| `disallowed-tools` | Removes tools from the pool while the skill is active. This is the field that actually restricts. |
 
-**Included skills** (21 total):
+Two traps worth knowing, both of which earlier FBS versions fell into:
+
+- `allowed-tools: Read, Glob, Grep` does **not** make a skill read-only. Every other tool remains callable. Use `disallowed-tools: Edit, Write, NotebookEdit` for that.
+- `context: fork` backgrounds the skill by default, so its findings arrive asynchronously. A skill that gates a decision — like `/check-plan` before approval — needs `background: false`. A forked skill also can't see the conversation, so it must never end a step with "ask the user"; give it a deterministic default instead.
+
+FBS uses forks only for `/check-plan` and `/review-idea-doc`, both read-only reviewers with `background: false`. The audit skills write files and need conversation context, so they run inline.
+
+**Included skills** (17 total):
 
 Governance pipeline (in order):
-- `new-idea` — explore architecture, create idea artifact
-- `review-idea-doc` — validate idea before it becomes a plan
-- `new-plan` — formal contract-change plan
-- `check-plan` — deep feasibility review of plan against codebase reality
-- `new-sprint` — create agent-executable sprint doc (self-validates; parallel sub-agent task tags)
-- `start-sprint` — execute work plan (supports parallel sub-agents by domain)
-- `check-sprint` — deep code review of sprint changes before verification
-- `review-sprint` — verification gates + close-out (`--deep` for parallel reviewer subagents)
-
-Session management:
-- `start-session` — review project status at session start
-- `close-session` — end-of-session resume-fast checklist (with service shutdown)
+- `new-idea` — explore alternatives, land on one direction, create the idea artifact
+- `review-idea-doc` — confirm the idea decided something before it becomes a plan
+- `new-plan` — the authoritative spec for one contract change, producing one sprint
+- `check-plan` — feasibility against the codebase + plan-discipline checks
+- `new-sprint` — agent-executable sprint doc with parallel workstreams
+- `start-sprint` — execute, delegating concurrent tracks to general-purpose sub-agents
+- `check-sprint` — deep code review of the diff, fanning out by review dimension on large diffs
+- `review-sprint` — verification gates + close-out
 
 Audits:
 - `mini-audit` — targeted drift check
@@ -275,96 +275,39 @@ Documentation (decoupled from sprint close):
 - `install-documentation` — one-time canonical doc setup
 - `doc-audit` — gap report between codebase and canonical docs
 - `doc-sprint-sync` — manual post-sprint canonical doc refresh
-- `doc-write` — writing standards (auto-loaded by the three above)
-- `documentation-governance` — high-level non-negotiables + pointers
-
-Git workflows:
-- `sync` — sync local repo with remote (fetch, pull, prune)
+- `doc-write` — writing standards (`user-invocable: false`, loaded by the three above)
 
 Utility:
+- `sync` — sync local repo with remote (fetch, pull, prune)
 - `compound` — document solved problems
-- `skill-creator` — meta-skill for creating new skills
 - `verify-install` — verify FBS installation
 
-### 6.4 Agents (subagents)
+### 6.4 Sub-agents
 
-Agents are specialized Claude instances with their own system prompts, tool restrictions, and model selection. Each is a Markdown file in `.claude/agents/`.
+FBS ships **no custom agent definitions**. This is deliberate. Bundled reviewer agents drift out of date, duplicate what `/check-sprint` already does, and impose model and tool choices that belong to the project rather than the framework.
 
-**Frontmatter fields**:
+Parallelism comes from the documents instead:
 
-| Field | Purpose |
-|-------|---------|
-| `name` | Unique identifier |
-| `description` | What it does and when to delegate |
-| `model` | `haiku`, `sonnet`, `opus`, or `inherit` |
-| `tools` | Comma-separated tool list (e.g. `Read, Glob, Grep, Bash`) |
-| `maxTurns` | Maximum agentic turns |
-| `memory` | Persistent memory scope: `user`, `project`, or `local` |
-| `permissionMode` | `default`, `acceptEdits`, `dontAsk`, `bypassPermissions`, `plan` |
-| `skills` | Skills to preload into agent context |
-| `isolation` | `worktree` for git worktree isolation |
-| `background` | `true` to always run as background task |
+- **`/start-sprint`** reads the sprint's **Parallel Workstreams** table and delegates each concurrent track to its own general-purpose sub-agent, launched together in a single message. Each track owns a disjoint set of files, which is what makes concurrency safe.
+- **`/check-sprint`** fans out on large diffs by **review dimension** — correctness, security, data integrity, performance, test quality — passing every sub-agent the explicit changed-file list, then deduplicating the findings.
 
-**Included agents** (9 total):
-
-Execution agents:
-- `verifier` — validates completed work (read-only)
-- `test-runner` — runs tests and fixes failures
-- `debugger` — root cause analysis and minimal fixes
-
-Reviewer agents (used by `/review-sprint --deep`):
-- `architecture-reviewer` — module boundaries, dependency direction, pattern consistency
-- `security-reviewer` — auth gaps, injection vectors, data exposure
-- `performance-reviewer` — N+1 queries, missing indexes, unnecessary re-renders
-- `data-integrity-reviewer` — missing transactions, constraint gaps, enum mismatches
-- `test-quality-reviewer` — coverage gaps, weak assertions, test isolation
-- `docs-governance-reviewer` — undocumented contract changes, stale canonical docs
+If you want project-specific agents, add them under `.claude/agents/`. Nothing in FBS will overwrite or depend on them. The frontmatter reference is in the [subagents docs](https://code.claude.com/docs/en/sub-agents); note that `tools` is an allowlist, `disallowedTools` is a denylist, and `disallowedTools` is applied first.
 
 ### 6.5 Hooks
 
-Hooks are deterministic automation — shell commands or LLM evaluators that run at specific lifecycle points. Configured in `.claude/settings.json`.
+FBS ships **no hooks**. Earlier versions included a shell guard, a secret-file read guard, and a formatter stub, plus `SessionStart` and `Stop` reminders. They were removed for three reasons:
 
-**Key hook events**:
+- The guards depended on `jq` and exited 0 when it was absent, so they failed **open** — silently permitting exactly what they advertised as blocked.
+- The `SessionStart` message claimed context had been compacted, which is not what that event means.
+- A bare `echo` on a `Stop` hook goes to the transcript, not to Claude, so the reminder never reached the model.
 
-| Event | When | Use case |
-|-------|------|----------|
-| `PreToolUse` | Before a tool call | Block risky commands, protect secret files |
-| `PostToolUse` | After a tool call | Auto-format edited files |
-| `SessionStart` | Session starts/resumes | Re-inject context after compaction |
-| `Stop` | Claude finishes responding | Verify task completion |
-
-**Three hook types**:
-- `command` — run a shell command
-- `prompt` — single-turn LLM evaluation (returns ok/not ok)
-- `agent` — multi-turn LLM verification with tool access
-
-**Included hooks**:
-- `shell-guard.sh` — block risky shell commands (PreToolUse)
-- `read-guard.sh` — block reading secret files (PreToolUse)
-- `format.sh` — auto-format after edits (PostToolUse)
-- Compaction re-injection (SessionStart)
-- Status doc update reminder (Stop)
+Hooks are a real and useful mechanism, but they belong to the project, not to a portable documentation kit. If you add them, see the [hooks docs](https://code.claude.com/docs/en/hooks), and make security-relevant guards fail **closed**.
 
 ### 6.6 Settings
 
-`.claude/settings.json` configures hooks, permissions, and environment variables.
+FBS ships **no `.claude/settings.json`**. With hooks removed there was nothing left in it — the old file's `permissions.allow: ["Read", "Glob", "Grep"]` was a no-op, since those tools need no approval by default.
 
-```json
-{
-  "permissions": {
-    "allow": ["Read", "Glob", "Grep"],
-    "deny": []
-  },
-  "hooks": { ... },
-  "env": { ... }
-}
-```
-
-Personal overrides go in `.claude/settings.local.json` (gitignored).
-
-### 6.7 MCP Servers
-
-`.mcp.json` at the project root configures shared MCP (Model Context Protocol) server connections. Supports environment variable expansion.
+Configure permissions, environment variables, and hooks in your own `settings.json` per the [settings docs](https://code.claude.com/docs/en/settings). Personal overrides go in `.claude/settings.local.json`, which the template `.gitignore` already excludes.
 
 ---
 
@@ -378,19 +321,31 @@ Not required for:
 - purely internal refactors
 - bug fixes restoring compliance with canonical spec
 
-### 7.2 Plan workflow
+### 7.2 What a plan is (and isn't)
 
-1. Explore via `/new-idea`
-2. Validate idea via `/review-idea-doc`
-3. Create plan via `/new-plan`
-4. Check feasibility via `/check-plan`
+A plan is the **authoritative record of a decision already made**. Three rules define it:
+
+**One direction, stated as fact.** Written in the indicative: "the `orders` table gains a `settled_at` timestamp," not "we could add a timestamp." A plan template deliberately has **no Alternatives Considered section** — alternatives are the idea doc's job, and carrying them into a plan is the single biggest cause of ambiguous implementation. `/check-plan` flags hedging language ("maybe", "possibly", "one approach", "alternatively", "TBD", "either/or", "depending on") as P0.
+
+**One plan, one sprint.** A plan produces exactly one sprint. Phased plans implying multiple sprints are three plans, not one. Phases *within* the sprint (DB → API → UI) are execution ordering and are fine. If the implementation impact exceeds one sprint, split into several independently approvable plans and record the dependency in Traceability.
+
+**Specific enough to build from.** Every file path real, every schema matching the project's actual patterns.
+
+The only permitted uncertainty is a Risk with a named mitigation, or an explicit Open Decision — and any Open Decision blocks approval.
+
+### 7.3 Plan workflow
+
+1. Explore via `/new-idea` — this is where alternatives get weighed and one is chosen
+2. (Optional) Validate the idea decided something via `/review-idea-doc`
+3. Create the plan via `/new-plan` — carries forward the decision only
+4. (Optional) Check feasibility and plan discipline via `/check-plan`
 5. Wait for explicit user approval
-6. Create sprint via `/new-sprint` (self-validates)
+6. Create the single sprint via `/new-sprint`
 7. Implement via `/start-sprint`
-8. Code review via `/check-sprint`
+8. (Optional) Code review via `/check-sprint`
 9. Verify and close via `/review-sprint`
 10. (Optional) Refresh canonical docs via `/doc-sprint-sync`
-11. Mark plan as "Implemented"
+11. Mark the plan `status: implemented` and record the sprint number
 
 ---
 
@@ -402,17 +357,38 @@ Not required for:
 
 ### 8.2 Sprint docs
 
-Required fields: stage (`planning | in_progress | verification | done`), acceptance criteria, test plan, links to plans (if contracts change).
+Required: stage (`planning | in_progress | verification | done`), acceptance criteria, parallel workstreams, test plan, and a link to the single source plan if contracts change.
 
-### 8.3 Stage progression
+### 8.3 Parallel workstreams
+
+This is what makes a sprint fast. The sprint doc declares named **tracks**, each recording:
+
+| Field | Purpose |
+|-------|---------|
+| Track | Name and the domain(s) it covers |
+| Owns | The files or directories it exclusively controls |
+| Depends on | Another track, or nothing |
+| Done when | How a sub-agent knows it finished |
+
+**No two concurrent tracks may list the same file.** Disjoint ownership is the entire safety mechanism — without it, parallel sub-agents overwrite each other and cost more than they save.
+
+The sprint also states an execution order. The typical shape is a sequential spine with parallel branches: schema lands first, then API and UI tracks run concurrently against it, then integration tests join them.
+
+`/start-sprint` reads this table and launches each concurrent track as its own general-purpose sub-agent, all in one message. Work that genuinely can't be split gets one track — don't invent parallelism.
+
+### 8.4 Stage progression
 
 ```
 planning -> in_progress -> verification -> done
 ```
 
 - `/start-sprint` handles planning -> in_progress
-- `/check-sprint` performs deep code review after implementation, before verification
+- `/check-sprint` optionally performs deep code review after implementation
 - `/review-sprint` handles verification -> done (the only way to reach done)
+
+### 8.5 Concurrent sprints
+
+More than one sprint may be open at once. `/start-sprint` names any other open sprints and their stages as a **one-line advisory warning**, then continues. Ideally an earlier sprint has reached `verification` or `done` first, but this never blocks work and never prompts for permission.
 
 ---
 
@@ -434,64 +410,58 @@ Monthly or at major milestones. Goal: comprehensive verification + remediation p
 
 ---
 
-## 10) Session management
+## 10) Roadmap
 
-### 10.1 Starting a session
+`docs/roadmap/ROADMAP.md` is the only document that answers "why are we building this now?" It is optional — delete the directory and every skill skips its roadmap step.
 
-Use `/start-session` at the beginning of every work session. It reads the status docs and gives you a briefing:
+### 10.1 How it stays current
 
-1. Reads `PROJECT_STATUS.md` (active work, latest session log, architectural decisions)
-2. Reads `docs/sprints/CURRENT_STATUS.md` (active sprint, stage, blockers)
-3. Checks `docs/audits/active/` for unresolved P0/P1 issues
-4. Summarizes everything in chat: current sprint, priorities, blockers, suggested next steps
+The roadmap is maintained by the sprint lifecycle, not by hand. Hand-maintained roadmaps go stale within a month.
 
-This is the "resume fast" entry point — any session can pick up where the last one left off.
+| When | What happens | Who |
+|------|--------------|-----|
+| Plan created | Plan added to its phase's **Related plans** | `/new-plan` |
+| Sprint created | `roadmap_phase:` set in sprint frontmatter; sprint added to that phase's **Related sprints**; phase moves `not started` → `in progress` | `/new-sprint` |
+| Sprint closed | Phase deliverables ticked; if all are done, phase → `completed` and the next phase → `in progress` | `/review-sprint` |
 
-### 10.2 Closing a session
+`PROJECT_STATUS.md` carries `roadmap_phase:` so a session knows the current phase without opening the roadmap.
 
-Use `/close-session` at the end of every work session. It ensures the repo is ready for the next session:
+### 10.2 Writing phases
 
-1. Commits and pushes any uncommitted changes
-2. Confirms which workflow was used (small fix, sprint, or audit)
-3. Writes a session log to `docs/sessions/YYYY-MM-DD.md` (append-only, 1-10 bullets)
-4. Updates `PROJECT_STATUS.md` if priorities, sprint, decisions, or audit counts changed
-5. Updates `docs/sprints/CURRENT_STATUS.md` if sprint stage or blockers changed
-6. Checks if contracts changed and ensures plans exist
-7. Checks if roadmap needs updating
-8. Considers whether a new skill should be created or an existing one updated
-9. Adds a session summary to the relevant sprint or audit doc
-10. Shuts down any running dev servers or services
+Deliverables are checkboxes, and they are the unit `/review-sprint` ticks. Write them as observable outcomes ("users can reset a password by email") rather than activities ("build password reset"). An activity can't be verified as done.
 
-### 10.3 Session log format
-
-Session logs go in `docs/sessions/YYYY-MM-DD.md` (one file per day, append-only):
-
-- **Summary** (1-5 bullets)
-- **Closed / shipped** (0-5 bullets)
-- **Decisions / notes** (0-5 bullets)
-- **Next / blockers** (0-5 bullets)
-
-### 10.4 How sessions connect to sprints
-
-`/start-session` reads the sprint state. `/close-session` updates it. The session log links to the relevant sprint doc. This creates a traceable history: sprint docs track *what* was planned, session logs track *when* it happened.
+A sprint may advance no phase — bug fixes and maintenance usually don't. Set `roadmap_phase: ""`. Nothing blocks.
 
 ---
 
-## 11) Knowledge compounding
+## 11) Traceability
 
-### 11.1 Solutions library
+FBS's document links are bidirectional and machine-checkable, which is what lets `/verify-install` catch broken governance rather than just missing files.
 
-Use `/compound` after solving a non-obvious problem to create a solution entry under `docs/solutions/` with:
-- Symptom, root cause, fix, prevention step
-- Solutions that become reusable procedures are promoted to skills
+```
+IDEA-NNN  ──related_plans──▶  PLAN-NNN  ──Implementation Record──▶  SPRINT-NNN
+                                  ▲                                      │
+                                  └──────────── plan: frontmatter ───────┘
+```
 
-### 11.2 Skill creation
-
-Use `/skill-creator` (or the skill-creator reference docs) when creating new skills. Follow progressive disclosure: keep SKILL.md under 500 lines, move detailed reference material to supporting files.
+- A sprint's `plan:` frontmatter names its source plan.
+- That plan's **Implementation Record → Sprint** names the same sprint.
+- `/new-sprint` checks both directions before creating anything, and refuses to create a second sprint for a plan that already has one.
+- `/review-sprint` fills the Implementation Record on close. An unfilled record breaks the check for the next person.
+- `/verify-install` validates the whole graph: dangling `plan:` pointers, plans whose record names a different sprint, two sprints claiming one plan, and `roadmap_phase:` values that name no real phase.
 
 ---
 
-## 12) Installing into an existing project
+## 12) Knowledge compounding
+
+Use `/compound` after solving a non-obvious problem to create a solution entry under `docs/solutions/` with symptom, root cause, fix, and a prevention step (a test, invariant, or repeatable check). Solutions that turn out to be reusable procedures get promoted to skills.
+
+FBS ships no skill-creation skill. Claude Code has its own `/skill-creator`; vendoring a copy into every project only guarantees it drifts from upstream. Keep new skills under 500 lines and move reference material into supporting files.
+
+---
+
+
+## 13) Installing into an existing project
 
 ### Phase A — Minimal "resume fast"
 
@@ -499,35 +469,35 @@ Use `/skill-creator` (or the skill-creator reference docs) when creating new ski
 - Add `PROJECT_STATUS.md`
 - Add `docs/sprints/CURRENT_STATUS.md`
 
-### Phase B — Governance gates
+### Phase B — Tier 2 execution
 
-- Add `docs/plans/` with plan template
-- Add `docs/ideas/` with idea template
-- Update `CLAUDE.md` to require plans for contract-impacting changes
+- Add `docs/sprints/` with `sprint-template.md` and `CURRENT_STATUS.md`
+- Add `/new-sprint`, `/start-sprint`, `/review-sprint`
+- Add `.claude/rules/workflow-sprints.md`
+- Start tracking work with sprint docs and stage progression
 
-### Phase C — Skills
+### Phase C — Tier 3 approval gate
 
-- Add `.claude/skills/documentation-governance/`
-- Create 3-6 initial domain skills
+- Add `docs/plans/` and `docs/ideas/` with their templates
+- Add `/new-idea`, `/new-plan`
+- Update `CLAUDE.md` with the tier table and the plan-before-contract-change gate
 
-### Phase D — Execution tracking
+### Phase D — Canonical documentation
 
-- Add `docs/sprints/` with sprint template and `CURRENT_STATUS.md`
-- Start tracking work using sprint docs with stage progression
+- Run `/install-documentation` to populate `docs/reference/`
+- Add `/doc-audit` and `/doc-sprint-sync` for ongoing maintenance
 
 ### Phase E — Drift control
 
-- Add `docs/audits/` with templates
+- Add `docs/audits/` with templates and `.claude/rules/workflow-audits.md`
 - Run a first mini audit after the first non-trivial feature
 
-### Phase F — Automation
+### Phase F — Roadmap and compounding
 
-- Add `.claude/agents/` for verification/debug/testing workflows
-- Add `.claude/settings.json` with hooks for formatting and safety gates
-- Add `.mcp.json` for shared tool integrations
+- Add `docs/roadmap/ROADMAP.md` with phases and observable deliverables
+- Add `docs/solutions/` and `/compound` for knowledge compounding
 
-### Phase G — Session management
+### Phase G — Project-specific extensions
 
-- Add `/start-session` and `/close-session` skills
-- Add `docs/sessions/` for session logs
-- Add `docs/solutions/` for knowledge compounding
+- Create 3-6 domain skills for your stack
+- Add your own `.claude/agents/`, hooks, or `settings.json` if you want them — FBS ships none and depends on none

@@ -92,4 +92,4 @@ Priority guidance:
 
 Ask the user: "Want me to proceed with documentation updates? I'll work through each document one at a time, starting with the highest priority."
 
-If approved, load the `/doc-write` skill and work through each document in turn, following its standards.
+If approved, load the `doc-write` skill and work through each document in turn, following its standards.

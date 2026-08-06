@@ -2,7 +2,7 @@
 doc_type: fbs_installation_checklist
 status: active
 created: 2026-01-25
-updated: 2026-05-13
+updated: 2026-08-06
 ---
 
 # FBS (Fluid Build System) — Installation Checklist (1 page)
@@ -14,85 +14,75 @@ Use this checklist when installing into a **new** or **existing** repo.
 - [ ] Review: [CLAUDE.md and Memory](https://code.claude.com/docs/en/memory)
 - [ ] Review: [Skills](https://code.claude.com/docs/en/skills)
 - [ ] Review: [Subagents](https://code.claude.com/docs/en/sub-agents)
-- [ ] Review: [Hooks](https://code.claude.com/docs/en/hooks)
 - [ ] Review: [Settings](https://code.claude.com/docs/en/settings)
-- [ ] Review: [MCP Servers](https://code.claude.com/docs/en/mcp)
 
 ## 1) Copy the starter tree
 
 - [ ] Copy everything under `templates/project-root/` into the destination repo root.
 
+FBS ships no hooks, no agent definitions, and no `settings.json`. If the destination repo already has `.claude/settings.json`, `.claude/hooks/`, or `.claude/agents/`, leave them alone — nothing in FBS depends on them and nothing will overwrite them.
+
 ## 2) Required "resume fast" docs (fill immediately)
 
-- [ ] `CLAUDE.md` (project instructions + governance rules)
-- [ ] `PROJECT_STATUS.md`
-- [ ] `docs/sprints/CURRENT_STATUS.md`
+- [ ] `CLAUDE.md` — set `project:`, tech stack, and conventions
+- [ ] `PROJECT_STATUS.md` — set `last_updated` and current state
+- [ ] `docs/sprints/CURRENT_STATUS.md` — set active work, or "none yet"
 
-## 3) Required Claude Code scaffolding (must exist)
+## 3) Required Claude Code scaffolding
 
-- [ ] `.claude/rules/` (workflow rules)
-- [ ] `.claude/skills/` (skills are discovered here by Claude Code)
-- [ ] `.claude/agents/` (subagent definitions)
-- [ ] `.claude/settings.json` (hooks + permissions)
-- [ ] `.mcp.json` (MCP server connections, if needed)
+- [ ] `.claude/rules/` — exactly two files, both path-scoped:
+  - `workflow-sprints.md` with `paths: ["docs/sprints/**"]`
+  - `workflow-audits.md` with `paths: ["docs/audits/**"]`
+- [ ] `.claude/skills/` — 17 skill directories, each with a `SKILL.md`
 
-## 4) Install Documentation (one-time canonical set — required)
+## 4) Skills (17 included)
 
-- [ ] Run `/install-documentation` in Claude Code
-  - Launches sub-agents to explore the codebase and create comprehensive canonical docs
-  - Sub-agents run in parallel: platform overview, schema/contracts, and terminology
-  - Creates populated (not placeholder) versions of all canonical docs
-- [ ] Verify all canonical docs are populated (no bracket placeholders or `YYYY-MM-DD` dates):
-  - [ ] `docs/reference/DOCUMENTATION_STANDARDS_CANONICAL.md`
-  - [ ] `docs/reference/DOCUMENTATION_HIERARCHY_CANONICAL.md`
-  - [ ] `docs/reference/DOCUMENT_MAINTENANCE_GUIDE_CANONICAL.md`
-  - [ ] `docs/reference/DOCUMENT_TEMPLATE_CANONICAL.md`
-  - [ ] `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md`
-  - [ ] `docs/reference/SCHEMA_AND_CONTRACTS_CANONICAL.md`
-  - [ ] `docs/reference/DOCUMENTATION_INVENTORY.md`
-  - [ ] `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`
+- [ ] Confirm all 17 are present under `.claude/skills/<skill-name>/SKILL.md`
+- [ ] Ensure **frontmatter `name` exactly matches the folder name**, lowercase and hyphenated
 
-## 5) Skills (21 included; add domain skills as needed)
+Pipeline: `new-idea`, `review-idea-doc`, `new-plan`, `check-plan`, `new-sprint`, `start-sprint`, `check-sprint`, `review-sprint`
+Docs: `install-documentation`, `doc-audit`, `doc-sprint-sync`, `doc-write`
+Audits: `mini-audit`, `in-depth-audit`
+Utility: `sync`, `compound`, `verify-install`
 
-- [ ] Confirm the 21 included skills are present under `.claude/skills/<skill-name>/SKILL.md`
-- [ ] Ensure **frontmatter `name` exactly matches folder name** and is lowercase/hyphenated
-- [ ] Doc skills shipped: `install-documentation`, `doc-audit`, `doc-sprint-sync`, `doc-write`, `documentation-governance`
 - [ ] Add project-specific domain skills (3-6 is a healthy starting point)
 
-## 6) Bootstrap governance (ideas + plans)
+## 5) Install Documentation (one-time canonical set — required)
 
-- [ ] `docs/ideas/README.md`
-- [ ] `docs/plans/README.md` + `plan-template.md`
-- [ ] Confirm `CLAUDE.md` enforces plan-before-contract-change
+- [ ] Run `/install-documentation` in Claude Code
+  - Launches parallel sub-agents to explore the codebase: platform overview, schema/contracts, terminology
+  - Creates populated (not placeholder) canonical docs
+- [ ] Verify all canonical docs are populated (no bracket placeholders, no `YYYY-MM-DD` dates):
+  - [ ] `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md`
+  - [ ] `docs/reference/SCHEMA_AND_CONTRACTS_CANONICAL.md`
+  - [ ] `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`
+  - [ ] `docs/reference/DOCUMENTATION_INVENTORY.md`
 
-## 7) Bootstrap execution tracking (sprints)
+## 6) Bootstrap the document tiers
 
-- [ ] `docs/sprints/README.md`
-- [ ] `docs/sprints/sprint-template.md`
+- [ ] `docs/ideas/idea-template.md` — has Approaches Considered, Decision, and Sprint Sizing sections
+- [ ] `docs/plans/plan-template.md` — has **no** Alternatives Considered section
+- [ ] `docs/sprints/sprint-template.md` — has a Parallel Workstreams table
+- [ ] Confirm `CLAUDE.md` states the one hard gate: plan-before-contract-change
 
-## 8) Bootstrap drift control (audits + fast checks)
+## 7) Bootstrap drift control
 
 - [ ] `docs/audits/templates/*` exist
+- [ ] `docs/audits/active/` and `docs/audits/resolved/` exist
 - [ ] Run a mini audit after the first non-trivial feature change
-  - [ ] Include "documentation completeness" check
+
+## 8) Optional: roadmap + knowledge compounding
+
+- [ ] `docs/roadmap/ROADMAP.md` — fill in phases and deliverables, or delete `docs/roadmap/` if you won't use one
+- [ ] `docs/solutions/` + template for the solutions library (`/compound`)
 
 ## 9) Verify install
 
-- [ ] In Claude Code, type `/verify-install` and fix any missing items it reports.
-- [ ] Confirm canonical docs are flagged as **OK** (not UNPOPULATED). If any are unpopulated, re-run `/install-documentation`.
+- [ ] Run `/verify-install` and fix any missing items it reports.
+- [ ] Confirm canonical docs are flagged **OK**, not UNPOPULATED. If any are unpopulated, re-run `/install-documentation`.
+- [ ] Confirm it reports no stale artifacts (`.claude/agents/`, `.claude/hooks/`, `foundation.md`, `workflow-small-fixes.md`, `documentation-governance/`, `.mcp.json`, `start-session/`, `close-session/`, `skill-creator/`, `docs/sessions/`, and the four documentation-standards docs under `docs/reference/` — all removed from FBS).
 
-## 10) Enable hooks and agents
+## 10) First run
 
-- [ ] Hooks: configure `.claude/settings.json` with hook scripts
-  - Make scripts executable: `chmod +x .claude/hooks/*.sh`
-  - Keep `shell-guard.sh` and `read-guard.sh` conservative; tune to your environment
-- [ ] Agents: keep `.claude/agents/` in version control
-  - Use `verifier` after marking work "done"
-  - Use `test-runner` after code changes
-  - Use `debugger` when failures occur
-
-## 11) Optional: session management + knowledge compounding
-
-- [ ] Add `/start-session` and `/close-session` to your workflow
-- [ ] Create `docs/sessions/` for session logs
-- [ ] Create `docs/solutions/` for the solutions library (`/compound`)
+- [ ] Read `PROJECT_STATUS.md` and confirm it reads cleanly
+- [ ] Pick a tier for your first piece of work — see the table in `CLAUDE.md`

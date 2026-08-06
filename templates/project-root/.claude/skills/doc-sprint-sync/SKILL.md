@@ -52,7 +52,7 @@ Order the work list by dependency — if doc B references doc A, do A first.
 
 For each item in the work list:
 
-1. Load the `/doc-write` skill (`.claude/skills/doc-write/SKILL.md`)
+1. Load the `doc-write` skill (`.claude/skills/doc-write/SKILL.md`)
 2. Read all source files listed for this document
 3. Read the existing document (if updating)
 4. Write or update the document following doc-write standards

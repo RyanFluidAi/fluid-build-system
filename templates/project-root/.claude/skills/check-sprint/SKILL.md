@@ -58,7 +58,17 @@ For each file in the changed file list:
 - Read the full file (not just the diff) to understand context.
 - For large files (>500 lines), focus on the changed regions but read enough surrounding context to understand the logic.
 
-Use parallel subagents (Task tool with Explore type) to review files concurrently when there are many changes. Split by domain (e.g., backend, frontend, shared/config).
+**Fanning out on a large diff.** When the changed file list is large (roughly 15+ files), delegate the review to parallel general-purpose sub-agents launched in a single message. Split by **review dimension**, not by file, so each pass covers the whole surface through one lens:
+
+- correctness and logic — bugs, error handling, edge cases
+- security — auth gaps, injection vectors, data exposure, secrets
+- data integrity — transactions, constraints, cascades, migration safety
+- performance — N+1 queries, missing indexes, unbounded operations, re-renders
+- test quality — coverage gaps, weak assertions, deleted or skipped tests
+
+Give every sub-agent the **explicit changed file list** you produced in step 1, plus the sprint doc path and the plan path. They cannot compute the diff themselves. Then synthesize and deduplicate their findings before writing the report — several lenses will surface the same issue.
+
+On a small diff, skip the fan-out and read the files directly. Delegation costs more than it saves below roughly 15 files.
 
 ### 3) Completeness check
 

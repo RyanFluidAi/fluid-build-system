@@ -3,22 +3,39 @@ project: your-project-name
 status: active
 last_updated: YYYY-MM-DD
 
-# "Resume context" pointers (keep these current)
-sprint_current_status: docs/sprints/CURRENT_STATUS.md
+# State only — every field below changes as work progresses.
+# Fixed paths (docs/reference/, .claude/skills/, docs/audits/active/) are not
+# recorded here; they are conventions, and a pointer to a constant is noise in
+# the one file that must stay fast to read.
 active_work: ""
-latest_session_log: ""
-roadmap_next_phase: ""
-canonical_architecture_decision: docs/plans/PLAN-001-YYYY-MM-DD-your-architecture-decision.md
-active_audits_dir: docs/audits/active/
-skills_index: .claude/skills/
-canonical_reference_root: docs/reference/
+active_sprint: ""
+roadmap_phase: ""
+open_p0: 0
+open_p1: 0
 ---
 
-This file is the **fastest way to resume work** with minimal context.
+This file is the **fastest way to resume work** with minimal context. Keep it under a page.
+
+## Now
+
+<!-- 1-3 sentences: what is being built and where it stands. -->
+
+## Next
+
+<!-- The next 1-3 concrete priorities. -->
+
+## Blockers
+
+<!-- What's blocking, and who owns it. Delete the section when empty. -->
+
+## Recent decisions
+
+<!-- Decisions a new session would need to know. Link the plan or sprint. 3-5 max; drop the oldest. -->
+
+---
 
 Update this file when:
-- priorities change,
-- the active sprint changes,
-- a major decision is made,
-- an audit opens/closes meaningful P0/P1 issues,
-- canonical references move.
+- priorities change
+- the active sprint or roadmap phase changes
+- a major decision is made
+- an audit opens or closes P0/P1 issues

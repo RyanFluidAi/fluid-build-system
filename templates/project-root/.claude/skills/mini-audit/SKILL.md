@@ -2,8 +2,6 @@
 name: mini-audit
 description: Create or update a mini audit for targeted drift checks after non-trivial changes. Use after changes that touch canonical surfaces (schema, API, DB, integrations).
 argument-hint: "[scope] [canonical docs to verify]"
-context: fork
-allowed-tools: Read, Glob, Grep, Bash
 ---
 
 # /mini-audit — Targeted Drift Check

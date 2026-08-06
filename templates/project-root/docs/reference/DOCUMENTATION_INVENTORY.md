@@ -7,17 +7,19 @@ last_updated: YYYY-MM-DD
 
 # Documentation Inventory
 
-This document records what documentation exists, what is missing, and what is explicitly out of scope for the current documentation installation.
+This document records what canonical documentation exists, what is missing, and what is explicitly out of scope.
+
+`docs/reference/` holds facts about this system only. Documentation standards, templates, and maintenance rules are not canonical docs — they live in the `doc-write` skill.
 
 ## Canonical set (required)
 
-- Documentation Standards: `docs/reference/DOCUMENTATION_STANDARDS_CANONICAL.md` — status: [present/missing]
-- Documentation Hierarchy: `docs/reference/DOCUMENTATION_HIERARCHY_CANONICAL.md` — status: [present/missing]
-- Document Maintenance Guide: `docs/reference/DOCUMENT_MAINTENANCE_GUIDE_CANONICAL.md` — status: [present/missing]
-- Document Template: `docs/reference/DOCUMENT_TEMPLATE_CANONICAL.md` — status: [present/missing]
 - Platform Overview: `docs/reference/PLATFORM_OVERVIEW_CANONICAL.md` — status: [present/missing]
 - Schema & Contracts: `docs/reference/SCHEMA_AND_CONTRACTS_CANONICAL.md` — status: [present/missing]
 - Global Terminology Index: `docs/reference/GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md` — status: [present/missing]
+
+## Domain docs (added as the system grows)
+
+<!-- One line per area-specific canonical doc: name, path, status -->
 
 ## Missing (to be created later)
 
@@ -26,4 +28,3 @@ This document records what documentation exists, what is missing, and what is ex
 ## Out of scope (explicit)
 
 - [Area] — reason
-

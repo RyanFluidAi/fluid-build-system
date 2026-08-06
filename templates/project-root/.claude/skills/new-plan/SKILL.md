@@ -4,200 +4,127 @@ description: Create a formal plan document for contract-impacting changes (schem
 argument-hint: "[topic]"
 ---
 
-# /new-plan — Create a comprehensive plan document
+# /new-plan — Create a plan document
 
 ## Goal
 
-Create a formal plan document for **contract-impacting changes** (schema/API/integration/business rules) that requires explicit approval before implementation.
+Write the authoritative specification for **one** contract-impacting change, in enough detail that a single sprint can execute it without further design decisions.
 
 ## When to use
 
 Create a plan for changes to:
-- **Database schemas** (tables, columns, constraints, migrations)
-- **API contracts** (endpoints, request/response shapes, error envelopes)
-- **Integration contracts** (external payloads, webhooks, partner APIs)
-- **Business rules** (documented canonical behavior)
+- **Database schemas** — tables, columns, constraints, migrations
+- **API contracts** — endpoints, request/response shapes, error envelopes
+- **Integration contracts** — external payloads, webhooks, partner APIs
+- **Business rules** — documented canonical behavior
 
-**Not required for:**
-- Internal refactors with no contract change
-- Bug fixes restoring compliance with existing specs
+Not required for internal refactors with no contract change, or bug fixes that restore compliance with an existing spec. Those are Tier 1 or Tier 2 work — see `CLAUDE.md`.
 
-## Ideal workflow
+## The three rules of a plan
 
-```
-/new-idea   -> discuss architecture and design
-/new-plan   -> formalize design (this skill)
-  pause: wait for approval
-/new-sprint -> create sprint doc (agent-readable execution plan)
-  execute implementation
-```
+These are what separate a plan from an idea doc. Violating them is the most common failure mode.
 
-Note: `/new-sprint` creates a sprint document that breaks down the approved plan into actionable tasks for agents to execute. It's the bridge between "what to build" (plan) and "how to build it" (sprint plan).
+### 1. One direction, stated as fact
+
+A plan records a decision that has already been made. Write it in the indicative: "The `orders` table gains a `settled_at` timestamp." Not "we could add a timestamp" or "one option is to add a timestamp."
+
+**Do not include an "Alternatives Considered" section.** Alternatives are explored in `/new-idea` and live in the idea doc. By the time a plan is written the choice is made, and the losing options are noise to the person implementing it. If a genuine fork in the road is still open, you are not ready to write a plan — go back to `/new-idea`.
+
+**Banned in a plan**: "maybe", "possibly", "we could", "one approach", "alternatively", "TBD", "either X or Y", "depending on", "if we decide", "some kind of", "or similar". Scan for these before presenting.
+
+The only permitted uncertainty is a **Risk** with a named mitigation, or an explicit **Open Decision** that the approver must resolve — and an Open Decision blocks approval. If there is more than one, the plan isn't ready.
+
+### 2. One plan, one sprint
+
+A plan produces exactly one sprint. Do not write phased plans with "Phase 1 / Phase 2 / Phase 3" that imply multiple sprints, and do not write a plan whose implementation impact obviously exceeds what one sprint can deliver.
+
+If the work is too large, split it into several plans, each independently approvable and each producing one sprint. Sequence them by number and record the dependency in Traceability. A plan that says "this will take three sprints" is three plans.
+
+Phases *within* the single sprint (DB → API → UI) are fine — that's execution ordering, not scope splitting.
+
+### 3. Specific enough to build from
+
+Every file path must be a real path in this repo. Every schema and signature must follow the patterns already used here. If you find yourself writing a generic example, go read the actual code first.
 
 ## Steps
 
-### Phase 1: Gather context
+### 1) Gather context
 
-If coming from `/new-idea`, you should already have:
-- Clear problem statement
-- Proposed architecture
-- Implementation phases
-- Key decisions
+If coming from `/new-idea`, you have the problem statement, chosen architecture, and key decisions. Use them.
 
-If not, ask the user to provide:
-- What contract is changing (schema/API/integration/business rule)
-- Why the change is needed
-- What alternatives were considered
+If not, establish what contract is changing, why, and what the decided direction is. If the user is still weighing options, stop and run `/new-idea` instead.
 
-### Phase 2: Read the plan template and context
+### 2) Read the template and the code
 
-- Read `docs/plans/plan-template.md` to understand the required structure
-- Read `docs/plans/README.md` for governance context (if exists)
-- Optionally review recent plans in `docs/plans/` for examples
+- Read `docs/plans/plan-template.md` for the required structure.
+- Read the actual schema files, route definitions, and type definitions the change touches. The specification section must reflect real code.
+- Review a recent plan in `docs/plans/` for house style.
 
-### Phase 3: Create the plan file
+### 3) Assign the number and create the file
 
-**Filename format**: `docs/plans/PLAN-NNN-YYYY-MM-DD-<short-topic>.md`
-- **Determine the next plan number**: scan `docs/plans/` for existing `PLAN-NNN-*.md` files and use the next sequential number (zero-padded to 3 digits). If no plans exist, start at `PLAN-001`.
-- `YYYY-MM-DD` = today's date
-- Use kebab-case for topic
-- Keep topic concise (3-6 words)
+**Filename**: `docs/plans/PLAN-NNN-YYYY-MM-DD-<short-topic>.md`
 
-### Phase 4: Fill each section thoughtfully
+- Scan `docs/plans/` for existing `PLAN-NNN-*.md` and take the next sequential number, zero-padded to 3 digits. First plan is `PLAN-001`.
+- `YYYY-MM-DD` is today. `<short-topic>` is kebab-case, 3-6 words.
+- Set `number: NNN` in frontmatter to match the filename.
 
-Use the template structure, ensuring each section is complete:
+### 4) Write the plan
 
-#### Required Metadata (frontmatter)
-- **Number**: Sequential plan number (matches filename `NNN`)
-- **Status**: Always start as "Draft"
-- **Created**: Today's date
-- **Author**: AI or human name
-- **Approver**: leave blank initially
-- **Related Issues**: link to relevant audit issues if applicable
+Fill every section of the template with real content:
 
-#### Problem Statement
-- **Current State**: What exists now (be specific, reference code/files)
-- **Desired State**: What should exist (concrete outcomes)
-- **Why This Matters**: Impact if not addressed (user/business value)
+- **Problem Statement** — current state with file references, desired state as concrete outcomes, why it matters.
+- **Decision** — one paragraph stating the direction in the indicative. This is the heart of the plan.
+- **Specification** — schema definitions, endpoint signatures, worked examples, semantics. Use the schema + example + semantics pattern.
+- **Canonical Changes Required** — which docs in `docs/reference/` change, and whether each is Patch / Minor / Major.
+- **Implementation Impact** — files to modify, new files, tests to add or update, migration approach.
+- **Migration Plan** — required if breaking: numbered steps and a rollback procedure. Otherwise state "No breaking changes."
+- **Risks** — table with likelihood, impact, and a concrete mitigation. "We'll be careful" is not a mitigation. Do not claim there are no risks.
+- **Traceability** — idea doc, canonical docs, anticipated implementation and test files, related audits, and any plan this one depends on.
 
-#### Proposed Solution
-- **Canonical Changes Required**:
-  - List affected docs (or note if canonical docs need to be created)
-  - Specify change type: Minor (additive), Major (breaking), or Patch (clarification)
-- **Proposed Specification**:
-  - Schema definitions (database table types)
-  - API endpoint signatures
-  - Example usage (actual code snippets)
-  - Semantics/business rules
+### 5) Link the roadmap
 
-#### Implementation Impact
-- **Code Changes Required**: list files to modify with descriptions
-- **New Files**: list new files with purposes
-- **Test Changes**: existing tests to update + new tests needed
-- **Data/Migration Impact**: migration required? Describe approach
+If `docs/roadmap/ROADMAP.md` exists, add this plan to the **Related plans** list of the phase it advances, and record that phase in the plan's Traceability section. Skip if there is no roadmap, or if the plan advances no phase.
 
-#### Migration Plan (if breaking)
-- Is it backward compatible?
-- Migration steps (specific, numbered)
-- Rollback procedure
+### 6) Self-check before presenting
 
-#### Alternatives Considered
-For each alternative:
-- Description
-- Pros/cons
-- Why not chosen
+- [ ] Filename and `number:` match, format is `PLAN-NNN-YYYY-MM-DD-<topic>.md`
+- [ ] No "Alternatives Considered" section exists
+- [ ] Zero banned hedging terms outside the Risks table
+- [ ] Scope fits one sprint
+- [ ] Every file path referenced exists in the repo
+- [ ] Schema and API examples follow this project's actual patterns
+- [ ] Migration impact assessed; rollback described if breaking
+- [ ] Risks have concrete mitigations
+- [ ] No section left as a placeholder
 
-#### Traceability
-Link the plan to:
-- Canonical docs (before and after)
-- Implementation files (anticipated)
-- Test files (anticipated)
-- Related audits (if any)
+### 7) Present and stop
 
-#### Risks
-Table format:
-| Risk | Likelihood | Impact | Mitigation |
+Report, in this order:
 
-Consider:
-- Data loss/corruption risks
-- Breaking changes to existing features
-- Performance impacts
-- Security implications
-- Migration failure scenarios
+1. **`PLAN-NNN` created at `docs/plans/PLAN-NNN-YYYY-MM-DD-<topic>.md`** — lead with the assigned number and full path.
+2. The decision, in one or two sentences.
+3. Contracts affected and the change type for each.
+4. Top risks and their mitigations.
+5. Any Open Decisions blocking approval.
+6. That the next step is approval, then `/new-sprint` — producing one sprint.
 
-### Phase 5: Review checklist
+**Do not implement anything until the user explicitly approves.**
 
-Before presenting to user, verify:
-- [ ] Filename follows `PLAN-NNN-YYYY-MM-DD-<topic>.md` format
-- [ ] All required sections are filled (not just placeholders)
-- [ ] Code examples are realistic (reference actual project patterns)
-- [ ] File paths reference actual locations in the repo
-- [ ] Migration impact is assessed
-- [ ] Risks are identified with mitigations
-- [ ] Alternatives show you considered multiple approaches
-- [ ] Traceability links are specific (not vague)
-- [ ] Schema examples follow existing project patterns
-- [ ] API examples follow project's routing and auth patterns
-
-### Phase 6: Present to user
-
-1. **Show the plan location** - Full path to the created file
-2. **Summarize key points**:
-   - What's being proposed
-   - Why it's needed
-   - Major implementation steps
-   - Key risks/mitigations
-3. **Explain approval requirement**: Stop here - do not implement until approved
-4. **Ask for review**: Request user to review and approve/request changes
-
-### Phase 7: Stop and wait
-
-**CRITICAL**: Do not implement any code changes until the user explicitly approves the plan.
-
-The user may:
-- Approve as-is -> proceed to `/new-sprint` to create execution plan
-- Request changes -> update plan and re-present
-- Reject -> discuss alternatives or abandon
-
-## Best practices
-
-### Writing clear problem statements
-- Be specific about current limitations
-- Quantify impact where possible
-- Reference actual user pain points or business needs
-
-### Designing good specifications
-- Follow existing project patterns (check similar features)
-- Show before/after examples
-- Include validation rules
-- Consider edge cases
-
-### Assessing risks realistically
-- Don't downplay risks to make plan look better
-- Think about what could go wrong
-- Provide concrete mitigations (not "we'll be careful")
-
-### Considering alternatives thoroughly
-- Show you explored multiple approaches
-- Explain trade-offs honestly
-- Document why the proposed solution is best
+The user may approve as-is, request changes (update and re-present), or reject (return to `/new-idea`).
 
 ## After approval
 
-Once approved:
-1. User updates plan status to "Approved" and adds approval date
-2. Use `/new-sprint` to create a sprint document with agent-readable execution plan
-3. Sprint doc breaks plan into phases/tasks with clear acceptance criteria
-4. Implement sprint tasks with traceability (reference plan in commits)
-5. Update canonical docs after implementation
-6. Mark plan as "Implemented" when complete
+1. User sets `status: approved` and fills the approval date.
+2. Run `/new-sprint` — it creates the single sprint that executes this plan.
+3. Implement with traceability: reference `PLAN-NNN` in commits.
+4. Mark the plan `status: implemented` when the sprint closes, and record the sprint number in the Implementation Record.
 
-## Common pitfalls to avoid
+## Common failure modes
 
-- Vague problem statements ("we need to improve X")
-- Missing migration plans for schema changes
-- No alternatives considered
-- Unrealistic risk assessments ("no risks")
-- Plans that skip straight to implementation details without context
-- Not linking to canonical docs that need updating
-- Missing traceability links to actual project files
+- Hedged language that leaves the implementer guessing — the top cause of bad sprints.
+- Carrying alternatives forward from the idea doc into the plan.
+- A plan sized for three sprints, then executed as one rushed sprint.
+- Generic examples instead of the project's real patterns.
+- Missing migration plan on a schema change.
+- Vague problem statements ("we need to improve X").
+- "No risks."

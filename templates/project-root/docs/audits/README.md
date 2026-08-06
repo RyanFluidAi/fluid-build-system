@@ -8,6 +8,8 @@ created: YYYY-MM-DD
 
 Audits track **alignment between implementation and canonical documentation** and prevent drift.
 
+Audits are never a sprint-close gate. `/review-sprint` surfaces a reminder when canonical surfaces were touched, but closing a sprint does not wait on an audit.
+
 ## Directory structure
 
 ```
@@ -41,10 +43,7 @@ docs/audits/
 
 ## Fast audits (deterministic checks)
 
-Prefer fast, deterministic checks before writing long-form audit docs:
-
-- Starter runner: `scripts/audits/run-fast.sh`
-- Customize it to your repo’s real checks (lint/build/tests).
+Prefer fast, deterministic checks before writing long-form audit docs. Run the project's real lint/build/test commands first and record their results, rather than reasoning about correctness in prose.
 
 In audit writeups:
 - record *which check failed*,

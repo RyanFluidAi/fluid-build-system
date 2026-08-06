@@ -8,15 +8,9 @@ user-invocable: false
 
 ## Purpose
 
-Operational writing guidance for creating or updating a single canonical document in `docs/reference/`.
+This skill is the **single authority** on how canonical documents are written, structured, versioned, and retired. Load it before creating or updating anything under `docs/reference/`.
 
-**Authoritative references** (read before writing):
-- **Documentation Standards**: `docs/reference/DOCUMENTATION_STANDARDS_CANONICAL.md` — full specification of writing rules, tone, format, validation
-- **Documentation Hierarchy**: `docs/reference/DOCUMENTATION_HIERARCHY_CANONICAL.md` — source-of-truth precedence, scope boundaries, document inventory
-- **Maintenance Guide**: `docs/reference/DOCUMENT_MAINTENANCE_GUIDE_CANONICAL.md` — creation, editing, versioning, supersession rules
-- **Document Template**: `docs/reference/DOCUMENT_TEMPLATE_CANONICAL.md` — copy/paste template with required sections
-
-This skill summarises the key rules for quick reference during active writing. When this skill and the canonical standards conflict, the canonical standards govern.
+`docs/reference/` contains facts about **this system** and nothing else. Documentation standards, templates, and maintenance rules live here, in this skill — not as canonical docs. A doc that explains how to write docs is not a fact about the system.
 
 Canonical documentation serves two audiences equally:
 1. **Human developers** — who need to understand the system quickly
@@ -26,9 +20,23 @@ Both audiences benefit from the same thing: precision, structure, and completene
 
 ---
 
+## Source-of-truth precedence
+
+When two documents conflict, the higher tier governs. Lower tiers never introduce, rename, or redefine anything owned by a higher tier — they cross-reference it.
+
+1. **Schemas and contracts** — `SCHEMA_AND_CONTRACTS_CANONICAL.md`. Owns every field name, type, and constraint.
+2. **Platform overview** — `PLATFORM_OVERVIEW_CANONICAL.md`. Owns architecture, boundaries, and invariants.
+3. **Domain-specific canonical docs** — per-area docs you add as the system grows.
+4. **Terminology** — `GLOBAL_TERMINOLOGY_INDEX_CANONICAL.md`. Owns definitions, not structure.
+5. **Inventory** — `DOCUMENTATION_INVENTORY.md`. Owns nothing; it is a map.
+
+Code outranks all of them. If canonical says X and the code does Y, that is drift — record it, don't paper over it.
+
+---
+
 ## Document structure
 
-Every canonical document follows this structure (mirrors `DOCUMENT_TEMPLATE_CANONICAL.md`):
+Every canonical document follows this structure:
 
 ```markdown
 ---
@@ -240,6 +248,68 @@ Never use: should, could, optional (use "nullable" or "not required"), might, co
 
 ---
 
+## No silent invention
+
+The hardest rule, and the one most often broken.
+
+**Never introduce a field, endpoint, event, status value, or behaviour that does not exist in the code.** Not as an example, not as an "obvious" completion of a pattern, not as a placeholder. A canonical doc is read as authoritative; an invented field becomes real the moment someone implements against it.
+
+When you find a gap:
+
+| Gap type | What to do |
+|----------|-----------|
+| **Blocking** — the structure can't be documented without the missing piece (undefined enum, unclear FK target, ambiguous nullability) | Stop. Record the gap explicitly in the doc as a `> **GAP:**` callout naming the file you checked and what you couldn't determine. Do not guess. |
+| **Non-blocking** — a nice-to-have detail is absent (no description comment, unclear intent behind a default) | Document what exists, omit what doesn't, and move on. |
+| **Needs a decision** — the code is inconsistent, or the right contract is genuinely undecided | This is a plan, not a doc edit. Note it and hand it to `/new-plan`. |
+
+Every claim must trace to a file you actually read. "I checked `src/db/schema.ts:42`" is the standard, not "this is how these usually work."
+
+---
+
+## Lifecycle and versioning
+
+### Statuses
+
+| Status | Meaning |
+|--------|---------|
+| `draft` | Being written. Not yet authoritative. |
+| `active` | Authoritative. This is the source of truth. |
+| `superseded` | Replaced. Kept for history; `superseded_by` points to the replacement. |
+
+### Change types
+
+Classify every canonical change, and record it in the plan when one exists:
+
+| Type | Meaning | Example |
+|------|---------|---------|
+| **Patch** | Clarification only. No contract change. | Fixing a typo in a description, adding a missing constraint that was always enforced. |
+| **Minor** | Additive. Existing consumers keep working. | New optional field, new endpoint, new enum value. |
+| **Major** | Breaking. Existing consumers break. | Removed or renamed field, changed type, narrowed enum, changed error envelope. |
+
+A **Major** change to a canonical doc requires an approved plan before the doc is edited — the doc follows the code, and the code needed a plan.
+
+### Supersession
+
+Replace a document rather than gutting it when its scope fundamentally changes:
+
+1. Create the new document.
+2. Set `superseded_by:` in the old document's frontmatter and `status: superseded`.
+3. Set `supersedes:` in the new document.
+4. Update every cross-reference that pointed at the old one.
+5. Update `DOCUMENTATION_INVENTORY.md`.
+
+Never delete a superseded canonical doc. Git history is not a substitute for an explicit pointer.
+
+---
+
+## Cross-references
+
+- Link by **path and heading**: `See SCHEMA_AND_CONTRACTS_CANONICAL.md#item-table`.
+- Reference definitions; never restate them. If the same field table appears in two docs, one of them is wrong and both will drift.
+- When you split a document, add cross-references in both directions.
+
+---
+
 ## Rules for updates vs creation
 
 ### When updating an existing document
@@ -248,6 +318,7 @@ Never use: should, could, optional (use "nullable" or "not required"), might, co
 - **Preserve structure** — don't reorganise sections that work fine
 - **Preserve correct content** — don't rewrite accurate paragraphs
 - **Add rows** — when adding a field, add a row to the existing table
+- **Never restructure without being asked** — a reorganisation buries the actual change in the diff
 - **Update frontmatter** — set `last_updated` to today's date
 
 ### When creating a new document
@@ -274,16 +345,20 @@ Never use: should, could, optional (use "nullable" or "not required"), might, co
 - Aspirational features not yet in code
 - Workarounds or temporary hacks (these go in `docs/solutions/`)
 - Content already in another canonical doc (reference it instead)
-- Implementation notes ("we chose X because Y") — that belongs in sprint docs or session logs
+- Implementation notes ("we chose X because Y") — that belongs in the sprint doc's Notes section
 
 ---
 
 ## Self-review checklist (run before finishing)
 
-- [ ] Every claim is verifiable in the source code
+- [ ] Every claim traces to a file you actually read
+- [ ] Nothing invented — no field, endpoint, or value that isn't in the code
+- [ ] Gaps recorded as explicit `> **GAP:**` callouts, not guessed at
 - [ ] No prohibited words or hedging language
 - [ ] Every operational structure has Schema + Example + Semantics
 - [ ] Examples use realistic values, not placeholders
 - [ ] No bracket placeholders `[like this]` or ellipsis `…` as the only content of a section
+- [ ] Nothing restated that another canonical doc owns — cross-referenced instead
+- [ ] Change classified as Patch / Minor / Major; Major has an approved plan
 - [ ] `last_updated` (and `created` if new) frontmatter is today's date
 - [ ] Cross-references to related canonical docs are present

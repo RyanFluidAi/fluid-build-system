@@ -17,18 +17,23 @@ Create or confirm the canonical documentation set under `docs/reference/`. This 
 - For each file, check whether it is a populated doc or still contains placeholder markers (`YYYY-MM-DD`, `[definition]`, `[What this platform is]`, bracket placeholders, or ellipsis `…` as the only content in a section).
 - Report what exists, what's populated, and what still needs work.
 
-### 2) Create governance docs first (these rarely need codebase exploration)
+### 2) Load the writing standards
 
-Create or confirm these four governance docs (they define the rules for all other canonical docs):
+Load the `doc-write` skill. It is the single authority on canonical document structure, tone, the schema + example + semantics pattern, precedence, versioning, and gap handling.
 
-1. `docs/reference/DOCUMENTATION_STANDARDS_CANONICAL.md` — governs all canonical docs (declarative tone, schema+example+semantics, no silent field introduction). The template version is already comprehensive — confirm it exists and set the dates.
-2. `docs/reference/DOCUMENTATION_HIERARCHY_CANONICAL.md` — source-of-truth precedence stack. Confirm it exists and set the dates.
-3. `docs/reference/DOCUMENT_MAINTENANCE_GUIDE_CANONICAL.md` — creation, editing, versioning, and supersession rules for canonical docs. Confirm it exists and set the dates.
-4. `docs/reference/DOCUMENT_TEMPLATE_CANONICAL.md` — copy/paste template for new canonical docs with required sections, frontmatter definitions, and common patterns (API endpoint, database table). Confirm it exists and set the dates.
+FBS does not ship documentation-standards docs into `docs/reference/`. That directory holds facts about the system and nothing else — the standards live in `doc-write`, loaded on demand.
 
 ### 3) Launch sub-agents to explore the codebase
 
 Spawn the following sub-agents **in parallel** using the Agent tool. Each agent explores the codebase and writes one canonical doc with real content based on what it finds.
+
+Sub-agents do not inherit this conversation's loaded skills. **Prefix every prompt below with:**
+
+```
+First, invoke the `doc-write` skill and follow its standards for structure, tone,
+the schema + example + semantics pattern, and gap handling. Never invent a field,
+endpoint, or value that isn't in the code — record gaps as `> **GAP:**` callouts.
+```
 
 #### Sub-agent A: Platform Overview
 
@@ -54,7 +59,6 @@ Rules: Document what exists. Raise gaps as notes, not assumptions. Use declarati
 ```
 
 - **subagent_type**: `general-purpose`
-- **mode**: `acceptEdits`
 
 #### Sub-agent B: Schema & Contracts
 
@@ -83,7 +87,6 @@ Rules: Document what exists. Raise gaps as notes, not assumptions. Use declarati
 ```
 
 - **subagent_type**: `general-purpose`
-- **mode**: `acceptEdits`
 
 #### Sub-agent C: Global Terminology Index
 
@@ -107,7 +110,6 @@ Rules: Document terms that actually appear in the codebase. Use declarative tone
 ```
 
 - **subagent_type**: `general-purpose`
-- **mode**: `acceptEdits`
 
 ### 4) Create the documentation inventory
 

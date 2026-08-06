@@ -13,6 +13,12 @@ Applies when working on sprint-based development or editing sprint docs under `d
 - Load relevant skills for the domains touched (usually 2-4 max).
 - If canonical contracts will change: create a plan in `docs/plans/` and wait for approval.
 
+## Concurrent sprints
+
+More than one sprint may be open at a time. This is allowed and never blocks.
+
+Ideally, an earlier sprint has reached `verification` or `done` before the next one starts. When it hasn't, **warn once and continue** — name the other open sprint(s) and their stages, then proceed. Do not refuse to start work on this basis.
+
 ## Stage tracking (required)
 
 Maintain one source of truth for stage:
@@ -21,14 +27,17 @@ Maintain one source of truth for stage:
 - Update `PROJECT_STATUS.md` so the repo remains "resume fast".
 
 Guardrail:
-- `docs/sprints/CURRENT_STATUS.md` is **overwrite-only**. Do not accumulate running history there; put history in `docs/sessions/YYYY-MM-DD.md` and sprint doc Notes.
+- `docs/sprints/CURRENT_STATUS.md` is **overwrite-only**. Do not accumulate running history there; history belongs in the sprint doc's Notes section.
 
 ## Definition of Done (DoD)
 
+Required to close:
 - Implementation matches sprint acceptance criteria.
 - Required tests/build checks run.
 - Contract-impacting changes have approved plans.
-- Mini audit completed if canonical surfaces were touched.
 - Status docs updated (`PROJECT_STATUS.md` and `docs/sprints/CURRENT_STATUS.md` at minimum).
+- Plan Implementation Record filled and roadmap phase advanced, where either applies.
 
-Note: Canonical doc updates (`docs/reference/`) are **not** a sprint-close gate. Refresh them manually via `/doc-sprint-sync` post-close when worth doing.
+Recommended, not gating — surface as a reminder at close, don't block on them:
+- Mini audit, if canonical surfaces were touched (`/mini-audit`).
+- Canonical doc refresh, if contracts changed (`/doc-sprint-sync`).
